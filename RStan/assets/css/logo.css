@@ -1,0 +1,7 @@
+aside.gdbar img {
+  width: 200px; 
+  height: 75px; 
+  position: absolute;
+  right: 0;
+  margin: 8px 15px;
+}
