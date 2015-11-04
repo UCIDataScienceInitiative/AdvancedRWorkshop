@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introduction to Shiny</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Introduction to Shiny">
+  <meta name="author" content="Homer Strong">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Introduction to Shiny</h1>
+    <h2>UCI Data Science Initiative</h2>
+    <p>Homer Strong<br/>Department of Statistics</p>
+  </hgroup>
+    <a href="https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop/zipball/gh-pages" class="example">
+     Download
+    </a>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>What is it</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>&quot;web application framework for R&quot;</li>
+<li>turns R code into interactive webpages</li>
+<li>easy</li>
+<li>flexible</li>
+<li>fun</li>
+<li>useful?!</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Goals for today</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>run first app</li>
+<li>cover tutorial topics</li>
+<li>mention more advanced topics</li>
+<li>interested in adminstering a UCI Shiny server? Ping me!</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Approximate schedule</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>basic concepts</li>
+<li>layouts &amp; UI</li>
+<li>server</li>
+<li>develop a simple example app</li>
+<li>exercise 1 (15min): your turn to make a simple app</li>
+<li>reactivity</li>
+<li>extensions</li>
+<li>sharing &amp; deployment</li>
+<li>exercise 2 (until lunch): something a little more complicated</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>UI and server</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>2 files; reasonable but not necessary</li>
+<li>UI
+
+<ul>
+<li>define form elements for user input</li>
+<li>specify where to put output from R</li>
+</ul></li>
+<li>server
+
+<ul>
+<li>take input from user</li>
+<li>???</li>
+<li>return output, e.g. plots, tables, etc</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>UI &amp; layout</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Skeletal version:</p>
+
+<pre><code>shinyUI(fluidPage(
+))
+</code></pre>
+
+<p>Sidebar layout with text:</p>
+
+<pre><code>shinyUI(fluidPage(
+  titlePanel(&quot;This is the title of the page&quot;),
+  sidebarLayout(
+    sidebarPanel(&quot;This text will be shown in the sidebar&quot;),
+    mainPanel(&quot;This text goes in the main part of the page&quot;)
+  )
+))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>sidebarLayout: good enough</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Shiny gives you plenty of control over layout. Today we&#39;ll stick with <code>sidebarLayout</code>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Webpages of text are boring</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>2 key ingredients: <em>inputs</em> and <em>outputs</em>.</p>
+
+<p>Inputs are form elements for the user. You assign variable names to the user&#39;s  input. Shiny will provide those inputs as arguments to the server. Examples:</p>
+
+<ul>
+<li><code>selectInput</code> is a drop down box, user can select from a list.</li>
+<li><code>sliderInput</code> is a slider, user selects a number within a range.</li>
+</ul>
+
+<p>Outputs show R return values. The R code simply returns a list with named elements. Examples:</p>
+
+<ul>
+<li><code>textOutput</code> for when R returns text.</li>
+<li><code>plotOutput</code> for plots (!).</li>
+<li><code>dataTableOutput</code> for tables.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Adding an input to the layout</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>shinyUI(fluidPage(
+  titlePanel(&quot;This is the title of the page&quot;),
+  sidebarLayout(
+    sidebarPanel(&quot;This text will be shown in the sidebar&quot;,
+        sliderInput(&quot;n_samples&quot;, 
+          label = &quot;Number of samples:&quot;,
+          min = 1, max = 100, value = c(1, 100))
+        ),
+    mainPanel(&quot;This text goes in the main part of the page&quot;)
+  )
+))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='What is it'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Goals for today'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Approximate schedule'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='UI and server'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='UI &amp; layout'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='sidebarLayout: good enough'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Webpages of text are boring'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Adding an input to the layout'>
+         8
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

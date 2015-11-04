@@ -1,0 +1,122 @@
+---
+title       : Introduction to Shiny
+subtitle    : UCI Data Science Initiative
+author      : Homer Strong
+job         : Department of Statistics
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : mathjax            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+github:
+  user: UCIDataScienceInitiative
+  repo: AdvancedRWorkshop
+
+---
+
+## What is it
++ "web application framework for R"
++ turns R code into interactive webpages
++ easy
++ flexible
++ fun
++ useful?!
+
+---
+
+## Goals for today
++ run first app
++ cover tutorial topics
++ mention more advanced topics
++ interested in adminstering a UCI Shiny server? Ping me!
+
+---
+
+## Approximate schedule
++ basic concepts
++ layouts & UI
++ server
++ develop a simple example app
++ exercise 1 (15min): your turn to make a simple app
++ reactivity
++ extensions
++ sharing & deployment
++ exercise 2 (until lunch): something a little more complicated
+
+---
+
+## UI and server
+
++ 2 files; reasonable but not necessary
++ UI
+  + define form elements for user input
+  + specify where to put output from R
++ server
+  + take input from user
+  + ???
+  + return output, e.g. plots, tables, etc
+
+
+--- 
+## UI & layout
+
+Skeletal version:
+```
+shinyUI(fluidPage(
+))
+```
+
+Sidebar layout with text:
+```
+shinyUI(fluidPage(
+  titlePanel("This is the title of the page"),
+  sidebarLayout(
+    sidebarPanel("This text will be shown in the sidebar"),
+    mainPanel("This text goes in the main part of the page")
+  )
+))
+```
+
+---
+
+## sidebarLayout: good enough
+
+Shiny gives you plenty of control over layout. Today we'll stick with `sidebarLayout`.
+
+---
+
+## Webpages of text are boring
+2 key ingredients: _inputs_ and _outputs_.
+
+Inputs are form elements for the user. You assign variable names to the user's  input. Shiny will provide those inputs as arguments to the server. Examples:
++ `selectInput` is a drop down box, user can select from a list.
++ `sliderInput` is a slider, user selects a number within a range.
+
+
+Outputs show R return values. The R code simply returns a list with named elements. Examples:
++ `textOutput` for when R returns text.
++ `plotOutput` for plots (!).
++ `dataTableOutput` for tables.
+
+---
+
+## Adding an input to the layout
+
+```
+shinyUI(fluidPage(
+  titlePanel("This is the title of the page"),
+  sidebarLayout(
+    sidebarPanel("This text will be shown in the sidebar",
+                 sliderInput("n_samples", 
+                             label = "Number of samples:",
+                             min = 1, max = 100, value = c(50))
+    ),
+    mainPanel("This text goes in the main part of the page", textOutput("summaries"), plotOutput("samplePlot"))
+  )
+))
+```
+
+---
+## Try running the hello world app
+
