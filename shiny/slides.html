@@ -196,14 +196,352 @@
   titlePanel(&quot;This is the title of the page&quot;),
   sidebarLayout(
     sidebarPanel(&quot;This text will be shown in the sidebar&quot;,
-        sliderInput(&quot;n_samples&quot;, 
-          label = &quot;Number of samples:&quot;,
-          min = 1, max = 100, value = c(1, 100))
-        ),
-    mainPanel(&quot;This text goes in the main part of the page&quot;)
+                 sliderInput(&quot;n_samples&quot;, 
+                             label = &quot;Number of samples:&quot;,
+                             min = 1, max = 100, value = c(50))
+    ),
+    mainPanel(&quot;This text goes in the main part of the page&quot;, textOutput(&quot;summaries&quot;), plotOutput(&quot;samplePlot&quot;))
   )
 ))
 </code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Server</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The user&#39;s input is stored in <code>input$n_samples</code> - this is because the first argument to <code>sliderInput</code> was <code>&quot;n_samples&quot;</code>! The server doesn&#39;t care what input it came from.</p>
+
+<pre><code>shinyServer(
+  function(input, output) {
+    output$summaries &lt;- renderText(paste(&quot;n:&quot;, input$n_samples))
+    output$samplePlot &lt;- renderPlot(hist(rnorm(input$n_samples)))
+  }
+)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>How the server code is executed</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>3 different cases!</p>
+
+<pre><code># Case 1: run once, when app is launched
+
+shinyServer(
+  function(input, output) {
+    # Case 2: run every time a user loads the app page
+    output$summaries &lt;- renderText(paste(&quot;n:&quot;, input$n_samples))
+    output$samplePlot &lt;- renderPlot(hist(rnorm(input$n_samples)))
+  }
+)
+</code></pre>
+
+<p>The 3rd case isn&#39;t really covered today.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Try running the hello world app!</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Download the repo [1] from GitHub, and open the <code>shiny/hello_world/ui.r</code> and <code>shiny/hello_world/server.r</code> files in RStudio. Then click on &quot;Run App&quot; in the top-right corner of the source panel, or execute</p>
+
+<pre><code>runApp(&#39;/change/this/path/AdvancedRWorkshop/shiny/hello_world&#39;)
+</code></pre>
+
+<p>[1] <a href="https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop">https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Exercises</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>adding other controls
+
+<ul>
+<li>changing the mean</li>
+<li>chaning the standard deviation</li>
+</ul></li>
+<li>try switching to a &quot;tabset&quot; layout, with a separate tab for the summary stats (instead of having the summary stats in the same main panel as the graphic)</li>
+<li>add a drop-down menu which can change the distribution</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>A few words about how this works</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>the web depends on client-server architecture</li>
+<li>the idea is that many clients can connect to a single server</li>
+<li>the &quot;server&quot; can be your own laptop, or it could a computer in the basement, or a cloud server hosted by Amazon.</li>
+<li>client = the browser (for us).</li>
+<li>the browser handles the layout and the human interaction</li>
+<li>shiny provides code for <em>both</em> the client and the server.</li>
+<li>when the client and the server are communicating, they are basically sending back and forth R lists.</li>
+<li>the variety different languages/technologies is a big challenge in web development</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>More toys</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><code>renderTable</code> / <code>tableOutput</code> for simple tables</li>
+<li><code>renderText</code> / <code>verbatimTextOutput</code> for formattted R output</li>
+<li><code>renderPlot</code> / <code>renderPlot</code> for plots (ggplot2 works fine!)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>1 layout tip: Tab Sets</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In our previous example, we had the following main panel.</p>
+
+<pre><code>mainPanel(&quot;This text goes in the main part of the page&quot;,
+          textOutput(&quot;summaries&quot;), plotOutput(&quot;samplePlot&quot;))
+</code></pre>
+
+<p>If we have different types of output (e.g. plot, table, model output, etc) we can put each in a &quot;Tab Set&quot;, which goes in the main panel, like this:</p>
+
+<pre><code>mainPanel(
+    tabsetPanel(
+      tabPanel(&quot;Plot&quot;, plotOutput(&quot;diamond.plot&quot;)), 
+      tabPanel(&quot;Summary&quot;, textOutput(&quot;summaries&quot;)) 
+    )
+)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Tables</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><code>renderTable</code> / <code>tableOutput</code> for simple tables
+vs.</li>
+<li><code>renderDataTable</code> / <code>dataTableOutput</code> for ~fancy~ tables </li>
+</ul>
+
+<p>Data tables features include sorting, filtering, and paging. Named after the JavaScript library, DataTable, which is used to create the tables in the browser.</p>
+
+<p>Simple tables are fine for e.g. <code>head(my.data.frame)</code>, but generally DataTables are preferred because they are so much more flexible, and just as easy to include in your app.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Debugging Shiny apps</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>printing intput variables can only be done inside a reactive context.</li>
+<li><code>browser</code> is often much more useful
+
+<ul>
+<li>allows you to explore variables at any particular point in code</li>
+<li>&quot;breakpoint&quot;</li>
+<li>use <code>Q</code> to escape the <code>browser</code> environment</li>
+</ul></li>
+<li>(you can also use <code>browser</code> at any time!)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Advanced browsing</h2>
+  </hgroup>
+  <article data-timings="">
+    <h3>Conditional browsing</h3>
+
+<p>Only trigger the browser when the user enters a certain input</p>
+
+<ul>
+<li>Only enter browser if the <code>price</code> input is greater than 2000:</li>
+<li><code>browser(expr=input$price &gt; 2000)</code></li>
+</ul>
+
+<h3>Custom error handling</h3>
+
+<p>This is also generally useful. Automatically enter browser on any error:</p>
+
+<pre><code>options(error = browser)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>DESCRIPTION</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>useful metadata for distribution</li>
+<li>also a way to enable <code>Showcase</code> mode</li>
+</ul>
+
+<pre><code>Title: My app
+Author: RStudio, Inc.
+AuthorUrl: http://www.rstudio.com/
+License: GPL-3
+DisplayMode: Showcase
+Tags: getting-started
+Type: Shiny
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>So, to share an app...</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>It depends on whether your audience can run it from R.</p>
+
+<h3>From R</h3>
+
+<ul>
+<li><code>runApp</code>: local files</li>
+<li><code>runUrl</code>: downloadable files over the internet</li>
+<li><code>runGitHub</code>: apps whose source is on GitHub</li>
+<li><code>runGist</code>: apps whose source is in a Gist</li>
+</ul>
+
+<h3>Not from R</h3>
+
+<ul>
+<li>it must be on a server which can be reached by your audience.</li>
+<li>Shinyapps.io $$$</li>
+<li>Shiny Server (if anybody is interested in helping to help setup)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Sharing</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>If the app is on GitHub, then it&#39;s easy to start it locally using the <code>runGitHub</code> function. e.g.</p>
+
+<pre><code>runGitHub(&quot;AdvancedRWorkshop&quot;, &quot;UCIDataScienceInitiative&quot;, subdir=&quot;shiny/hello_world&quot;)
+</code></pre>
+
+<p><code>runGist</code> is a similar function for running apps whose source is stored in gists.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Very important stuff</h2>
+  </hgroup>
+  <article data-timings="">
+    <p class='..'>that is not covered today, but you should be aware of.</p>
+
+<ul>
+<li>can store/query data using databases, dropbox, AWS S3, etc</li>
+<li>plugins exist for mapping, 3D scatterplots, networks, various D3 charts.</li>
+<li>reactivity is for optimizing the server computation to re-use as much as possible</li>
+<li>Shiny apps can be defined in RMarkdown reports to produce &quot;interactive documents&quot;</li>
+<li>it&#39;s easy to allow users to download data, e.g. data frames as CSV files</li>
+<li>layout is completely customizable</li>
+<li>seems like there&#39;s some support for interactive plots(!)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Resources</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The official documentation from RStudio is pretty good. A few pointers:</p>
+
+<ul>
+<li>The cheatsheet is a great summary
+
+<ul>
+<li><a href="http://shiny.rstudio.com/images/shiny-cheatsheet.pdf">http://shiny.rstudio.com/images/shiny-cheatsheet.pdf</a></li>
+</ul></li>
+<li>The gallery has lots of useful examples of complete apps
+
+<ul>
+<li><a href="http://shiny.rstudio.com/gallery/">http://shiny.rstudio.com/gallery/</a></li>
+</ul></li>
+<li>the widget gallery isolated uses for all of the builtin widgets
+
+<ul>
+<li><a href="http://shiny.rstudio.com/gallery/widget-gallery.html">http://shiny.rstudio.com/gallery/widget-gallery.html</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Exercise 2</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>For this exercise, you are invited to do <em>whatever</em> you want with Shiny.</li>
+<li>Suggested exercise: build, from scratch, an app that will explore the <code>diamonds</code> dataset of ggplot2 fame.</li>
+<li>controls: scale, with 2 knobs, for subsetting the data</li>
+<li>the server should subset the data accordingly and return a plot of the data over that subset</li>
+<li>then add a checkbox for making the dots transparent</li>
+</ul>
 
   </article>
   <!-- Presenter Notes -->
@@ -259,6 +597,102 @@
       <a href="#" target="_self" rel='tooltip' 
         data-slide=8 title='Adding an input to the layout'>
          8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Server'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='How the server code is executed'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Try running the hello world app!'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Exercises'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='A few words about how this works'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='More toys'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='1 layout tip: Tab Sets'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Tables'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Debugging Shiny apps'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Advanced browsing'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='DESCRIPTION'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='So, to share an app...'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Sharing'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='Very important stuff'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='Resources'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='Exercise 2'>
+         24
       </a>
     </li>
   </ul>
