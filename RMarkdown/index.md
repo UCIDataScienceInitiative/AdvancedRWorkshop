@@ -1,5 +1,5 @@
 ---
-title       : RStan
+title       : R-Markdown
 subtitle    : UCI Data Science Initiative
 author      : Sepehr Akhavan
 job         : Dept. of Statistics
