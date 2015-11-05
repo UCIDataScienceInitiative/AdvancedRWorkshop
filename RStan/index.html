@@ -383,8 +383,10 @@ summary(fit)
 <ul>
 <li><p>Stan&#39;s Program Blocks</p></li>
 <li><p>Data Types, Variable Declaration, and Statements</p></li>
-<li><p>Log Likelihood Specification</p></li>
 <li><p>User-Defined Functions</p></li>
+<li><p>Reparameterization and Change of Variables</p></li>
+<li><p>Truncated Data</p></li>
+<li><p>Censored Data</p></li>
 <li><p>Examples </p></li>
 </ul>
 
@@ -612,6 +614,459 @@ vector[7] mu[3]; // 3-dimensional array of vectors of length 7
   <!-- Presenter Notes -->
 </slide>
 
+<slide class="" id="slide-27" style="background:;">
+  <hgroup>
+    <h3>Assignment Statements:</h3>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">n &lt;- 1;
+Sigma[1,1] &lt;- 1;
+</code></pre>
+
+<h3>Sampling Statements:</h3>
+
+<pre><code class="r">y ~ normal(mu, sigma);
+</code></pre>
+
+<h3>Log Probability Increment Statement:</h3>
+
+<p>The statement above is equivalent to:</p>
+
+<pre><code class="r">increment_log_prob(normal_log(y, mu, sigma))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-28" style="background:;">
+  <hgroup>
+    <h3>For Loops:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Suppose N is an integer and y is a an array of real values of length N:</li>
+</ul>
+
+<pre><code class="r">for (n in 1:N){
+  y[n] ~ normal(mu, sigma);
+}
+</code></pre>
+
+<ul>
+<li>alternatively, we can use vectorized operations in stan and write:</li>
+</ul>
+
+<pre><code class="r">y ~ normal(mu, sigma)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h3>Conditional Statements:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Stan supports if-then-else syntax as in C++:</li>
+</ul>
+
+<pre><code class="r">if (condition1)
+  statement1
+else if (condition2)
+  statement2
+//...
+else if (conditionN)
+  statementN
+else
+  elseStatement
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>User-Defined Functions:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Stan allows users to define their own functions</p></li>
+<li><p>User defined functions appear in the function block and before all other blocks</p></li>
+<li><p>function definition has C++ style where the type of the output as well as arguments should be explicitely mentioned:</p></li>
+</ul>
+
+<pre><code class="r">real myFunc(real arg1, real arg2){
+  // ... statements
+}
+</code></pre>
+
+<ul>
+<li>functions with no output have type &quot;void&quot;:</li>
+</ul>
+
+<pre><code class="r">void myFunc(real arg1, real arg2){
+  // ... statements
+}
+</code></pre>
+
+<ul>
+<li>You can learn more about functions in section 26.1 (page 282) of the <a href="https://github.com/stan-dev/stan/releases/download/v2.8.0/stan-reference-2.8.0.pdf">user manual</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Reparameterization and Change of Variables:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Stan supports a direct encoding of reparameterizations.</p></li>
+<li><p>Stan also supports changes of variables. To do so:</p>
+
+<ul>
+<li>We should directly increment the log probability accumulator with the log Jacobian of the transform</li>
+</ul></li>
+<li><p>Why we care about reparameterization?</p>
+
+<ul>
+<li>different parameterizations sometime have different computational performances</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h3>Reparameterization:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>This can be best understood with an example below (Stan user&#39;s manual):</p></li>
+<li><p>Conisder Beta distribution with two different parameterizations:</p>
+
+<ul>
+<li>1) \(Beta(\alpha, \beta)\): \(\alpha\) and \(\beta\) are shape parameters</li>
+<li>2) \(Beta(\phi, \lambda)\): 
+
+<ul>
+<li>2.1) \(\phi = \alpha/(\alpha + \beta)\) (mean)</li>
+<li>2.2) \(\lambda = \alpha + \beta\)</li>
+</ul></li>
+</ul></li>
+<li><p>Under this section, we specify y&#39;s (data) from the same \(Beta(\alpha, \beta)\) under both reparameterization (no need for Jacobian!). </p></li>
+<li><p>However, in (1), we directly sample \(\alpha\) and \(\beta\), where in (2), we first sample \(\phi\) and \(\lambda\) and we compute \(\alpha\) and \(\beta\) accordingly</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h3>Reparameterization (1st Parameterization):</h3>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data {
+  int&lt;lower = 0&gt; N;
+  vector[N] y;
+}
+parameters {
+  real&lt;lower = 0&gt; alpha;
+  real&lt;lower = 0&gt; beta;
+  ...
+}
+model {
+  alpha ~ ... ; // our prior for alpha
+  beta ~ ... ; // our prior for beta
+  y ~ beta(alpha, beta); 
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    <h3>Reparameterization (2nd Parameterization):</h3>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">parameters {
+  real &lt;lower = 0, upper = 1&gt; phi;
+  real &lt;lower = 0&gt; lambda;
+  ...
+}
+transformed parameters{
+  real&lt;lower = 0&gt; alpha;
+  real&lt;lower = 0&gt; beta;
+  alpha &lt;- lambda*phi;
+  beta &lt;- lambda*(1 - phi);
+}
+model {
+  phi ~ ... ; // prior for phi
+  lambda ~ ...; // prior for lambda
+  y ~ beta(alpha, beta); // transformed param used. No Jacobian Needed!
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-35" style="background:;">
+  <hgroup>
+    <h3>Change of Variables:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider the distribution of variable \(\theta > 0\) where it&#39;s log is normally distributed:</li>
+</ul>
+
+<p>\[log(\theta) \sim N(\mu, \sigma)\]</p>
+
+<ul>
+<li><p>Then we know Y is distributed as:
+\[P(\theta) = N(log(\theta) | \mu, \sigma) \times |\frac{d}{d\theta} log(\theta)|\]
+\[P(\theta) = N(log(\theta) | \mu, \sigma) 1/\theta\]</p></li>
+<li><p>Stan works with log probability, so:
+\[log(P(\theta)) = log \big(Normal(log(\theta) | \mu, \sigma)\big) - log(\theta)\]</p></li>
+<li><p>so we need to incremenet the likelihood by:</p>
+
+<ul>
+<li>log absolute derivative (ex. \(log (|\frac{d}{d\theta} log(\theta)|)\))</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-36" style="background:;">
+  <hgroup>
+    <h3>Change of Variables:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can then easily implement the model as:</li>
+</ul>
+
+<pre><code class="r">parameters {
+  real&lt;lower = 0&gt; theta;
+}
+model{
+  log(theta) ~ normal(mu, sigma);
+  increment_log_prob(-log(theta));
+  ...
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-37" style="background:;">
+  <hgroup>
+    <h3>The distinction between Reparam. vs. Change of Var?</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Reparam.: We first sample a parameter and then we transform it.</p></li>
+<li><p>Change of Var: We first transform a variable, and then we sample it!</p></li>
+<li><p>only the latter needs Jacobian!</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-38" style="background:;">
+  <hgroup>
+    <h3>The distinction between Reparam. vs. Change of Var?</h3>
+  </hgroup>
+  <article data-timings="">
+    <h2>Exercise: Gamma vs. Inverse Gamma using both Reparameterization and Change of variables</h2>
+
+<h2>Reminder: A variable has inverse-gamma distribution if it&#39;s inverse has gamma distribution</h2>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-39" style="background:;">
+  <hgroup>
+    <h3>Exercise - Transformation:</h3>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-40" style="background:;">
+  <hgroup>
+    <h3>Exercise - Change of Variable:</h3>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-41" style="background:;">
+  <hgroup>
+    <h2>Truncated Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Trucated data: measurements are only reported if they fall with a boundary</p></li>
+<li><p>Truncation in Stan is restricted to:</p>
+
+<ul>
+<li>univariate distributions</li>
+<li>with available log cumulative distribution</li>
+</ul></li>
+<li><p>To understand truncation better, you can consider a detector which only is activated if the signals it detects are above a certain limit. </p></li>
+<li><p>There may be lots of weak incoming signals, but we can never tell using this detector.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-42" style="background:;">
+  <hgroup>
+    <h2>Truncated Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data {
+  int&lt;lower=0&gt; N;
+  real U;
+  real&lt;upper=U&gt; y[N];
+}
+parameters {
+  real mu;
+  real&lt;lower=0&gt; sigma;
+}
+model {
+  for (n in 1:N)
+    y[n] ~ normal(mu,sigma) T[,U];
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-43" style="background:;">
+  <hgroup>
+    <h2>Censored Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Under censoring, some observations may be censored, meaning that we only know that they are below (or above) some bound but we don&#39;t know their actual values.</p></li>
+<li><p>Unlike with truncated data, the number of data points that were censored is known.</p></li>
+<li><p>It&#39;s wrong to ignore censored data!</p></li>
+<li><p>One way to model censored data is to treat the censored data as missing data that is constrained to fall in the censored range of values. </p></li>
+<li><p>Note that Stan does not allow unknown values in its arrays or matrices</p></li>
+<li><p>So we can treat censored data as unknown parameters!</p></li>
+<li><p>In that case, censored data will be sampled like other parameters</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-44" style="background:;">
+  <hgroup>
+    <h2>Censored Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data {
+  int&lt;lower=0&gt; N_obs;
+  int&lt;lower=0&gt; N_cens;
+  real y_obs[N_obs];
+  real&lt;lower=max(y_obs)&gt; U;
+}
+parameters {
+  real&lt;lower=U&gt; y_cens[N_cens];
+  real mu;
+  real&lt;lower=0&gt; sigma;
+} 
+model {
+  y_obs ~ normal(mu,sigma);
+  y_cens ~ normal(mu,sigma);
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-45" style="background:;">
+  <hgroup>
+    <h2>Censored Data - Likelihood Approach:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>it is not necessary to impute values.</p></li>
+<li><p>Instead, the values can be integrated out:</p></li>
+<li><p>Each censored data point has a probability of:
+\[Pr[Y > U] = \int_{U}^{\infty} P(Y| ...) dY = 1 - cdf(U)\]</p></li>
+<li><p>the complementary CDF above in Stan is of the form:</p>
+
+<ul>
+<li>distName_ccdf_log</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-46" style="background:;">
+  <hgroup>
+    <h2>Censored Data - Likelihood Approach:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data {
+  int&lt;lower=0&gt; N_obs;
+  int&lt;lower=0&gt; N_cens;
+  real y_obs[N_obs];
+  real&lt;lower=max(y_obs)&gt; U;
+}
+parameters {
+  real mu;
+  real&lt;lower=0&gt; sigma;
+}
+model {
+  y_obs ~ normal(mu,sigma);
+  increment_log_prob(N_cens * normal_ccdf_log(U,mu,sigma));
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-47" style="background:;">
+  <hgroup>
+    <h2>Examples:</h2>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
     <slide class="backdrop"></slide>
   </slides>
   <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
@@ -770,6 +1225,132 @@ vector[7] mu[3]; // 3-dimensional array of vectors of length 7
       <a href="#" target="_self" rel='tooltip' 
         data-slide=26 title='Statements:'>
          26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='Assignment Statements:'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='For Loops:'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='Conditional Statements:'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='User-Defined Functions:'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Reparameterization and Change of Variables:'>
+         31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Reparameterization:'>
+         32
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=33 title='Reparameterization (1st Parameterization):'>
+         33
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=34 title='Reparameterization (2nd Parameterization):'>
+         34
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=35 title='Change of Variables:'>
+         35
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=36 title='Change of Variables:'>
+         36
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=37 title='The distinction between Reparam. vs. Change of Var?'>
+         37
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=38 title='The distinction between Reparam. vs. Change of Var?'>
+         38
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=39 title='Exercise - Transformation:'>
+         39
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=40 title='Exercise - Change of Variable:'>
+         40
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=41 title='Truncated Data:'>
+         41
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=42 title='Truncated Data:'>
+         42
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=43 title='Censored Data:'>
+         43
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=44 title='Censored Data:'>
+         44
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=45 title='Censored Data - Likelihood Approach:'>
+         45
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=46 title='Censored Data - Likelihood Approach:'>
+         46
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=47 title='Examples:'>
+         47
       </a>
     </li>
   </ul>

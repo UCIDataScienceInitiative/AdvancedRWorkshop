@@ -242,9 +242,13 @@ The rest of the workshop will be on details of writing stan models. In particula
 
 + Data Types, Variable Declaration, and Statements
 
-+ Log Likelihood Specification
-
 + User-Defined Functions
+
++ Reparameterization and Change of Variables
+
++ Truncated Data
+
++ Censored Data
 
 + Examples 
 
@@ -409,3 +413,369 @@ vector[7] mu[3]; // 3-dimensional array of vectors of length 7
 + Conditional Statements
 
 + Print
+
+---
+
+### Assignment Statements:
+```{r, eval=FALSE}
+n <- 1;
+Sigma[1,1] <- 1;
+```
+
+### Sampling Statements:
+```{r, eval=FALSE}
+y ~ normal(mu, sigma);
+```
+
+### Log Probability Increment Statement:
+The statement above is equivalent to:
+```{r, eval=FALSE}
+increment_log_prob(normal_log(y, mu, sigma))
+```
+
+---
+
+### For Loops:
+
++ Suppose N is an integer and y is a an array of real values of length N:
+
+```{r, eval=FALSE}
+for (n in 1:N){
+  y[n] ~ normal(mu, sigma);
+}
+```
+
++ alternatively, we can use vectorized operations in stan and write:
+```{r, eval=FALSE}
+y ~ normal(mu, sigma)
+```
+
+---
+
+### Conditional Statements:
+
++ Stan supports if-then-else syntax as in C++:
+
+```{r, eval=FALSE}
+if (condition1)
+  statement1
+else if (condition2)
+  statement2
+//...
+else if (conditionN)
+  statementN
+else
+  elseStatement
+```
+
+---
+
+## User-Defined Functions:
+
++ Stan allows users to define their own functions
+
++ User defined functions appear in the function block and before all other blocks
+
++ function definition has C++ style where the type of the output as well as arguments should be explicitely mentioned:
+
+```{r, eval=FALSE}
+real myFunc(real arg1, real arg2){
+  // ... statements
+}
+```
+
++ functions with no output have type "void":
+```{r, eval=FALSE}
+void myFunc(real arg1, real arg2){
+  // ... statements
+}
+```
+
++ You can learn more about functions in section 26.1 (page 282) of the [user manual] (https://github.com/stan-dev/stan/releases/download/v2.8.0/stan-reference-2.8.0.pdf)
+
+---
+
+## Reparameterization and Change of Variables:
+
++ Stan supports a direct encoding of reparameterizations.
+
++ Stan also supports changes of variables. To do so:
+  + We should directly increment the log probability accumulator with the log Jacobian of the transform
+  
++ Why we care about reparameterization?
+  + different parameterizations sometime have different computational performances
+  
+
+---
+
+### Reparameterization:
+
++ This can be best understood with an example below (Stan user's manual):
+
++ Conisder Beta distribution with two different parameterizations:
+  + 1) $Beta(\alpha, \beta)$: $\alpha$ and $\beta$ are shape parameters
+  + 2) $Beta(\phi, \lambda)$: 
+      + 2.1) $\phi = \alpha/(\alpha + \beta)$ (mean)
+      + 2.2) $\lambda = \alpha + \beta$
+
++ Under this section, we specify y's (data) from the same $Beta(\alpha, \beta)$ under both reparameterization (no need for Jacobian!). 
+
++ However, in (1), we directly sample $\alpha$ and $\beta$, where in (2), we first sample $\phi$ and $\lambda$ and we compute $\alpha$ and $\beta$ accordingly
+  
+
+---
+
+### Reparameterization (1st Parameterization):
+
+```{r, eval=FALSE}
+data {
+  int<lower = 0> N;
+  vector[N] y;
+}
+parameters {
+  real<lower = 0> alpha;
+  real<lower = 0> beta;
+  ...
+}
+model {
+  alpha ~ ... ; // our prior for alpha
+  beta ~ ... ; // our prior for beta
+  y ~ beta(alpha, beta); 
+}
+```
+  
+
+---
+
+### Reparameterization (2nd Parameterization):
+
+```{r, eval=FALSE}
+parameters {
+  real <lower = 0, upper = 1> phi;
+  real <lower = 0> lambda;
+  ...
+}
+transformed parameters{
+  real<lower = 0> alpha;
+  real<lower = 0> beta;
+  alpha <- lambda*phi;
+  beta <- lambda*(1 - phi);
+}
+model {
+  phi ~ ... ; // prior for phi
+  lambda ~ ...; // prior for lambda
+  y ~ beta(alpha, beta); // transformed param used. No Jacobian Needed!
+}
+```
+  
+
+---
+
+### Change of Variables:
+
++ Consider the distribution of variable $\theta > 0$ where it's log is normally distributed:
+
+$$log(\theta) \sim N(\mu, \sigma)$$
+
++ Then we know Y is distributed as:
+$$P(\theta) = N(log(\theta) | \mu, \sigma) \times |\frac{d}{d\theta} log(\theta)|$$
+$$P(\theta) = N(log(\theta) | \mu, \sigma) 1/\theta$$
+
++ Stan works with log probability, so:
+$$log(P(\theta)) = log \big(Normal(log(\theta) | \mu, \sigma)\big) - log(\theta)$$
+
++ so we need to incremenet the likelihood by:
+  + log absolute derivative (ex. $log (|\frac{d}{d\theta} log(\theta)|)$)
+
+---
+
+### Change of Variables:
+
++ We can then easily implement the model as:
+
+```{r, eval=FALSE}
+parameters {
+  real<lower = 0> theta;
+}
+model{
+  log(theta) ~ normal(mu, sigma);
+  increment_log_prob(-log(theta));
+  ...
+}
+```
+
+---
+
+### The distinction between Reparam. vs. Change of Var?
+
++ Reparam.: We first sample a parameter and then we transform it.
+
++ Change of Var: We first transform a variable, and then we sample it!
+
++ only the latter needs Jacobian!
+
+
+---
+
+### The distinction between Reparam. vs. Change of Var?
+
+
+## Exercise: Gamma vs. Inverse Gamma using both Reparameterization and Change of variables
+
+## Reminder: A variable has inverse-gamma distribution if it's inverse has gamma distribution
+
+---
+
+### Exercise - Transformation:
+
+```{r, eval=FALSE, echo=FALSE}
+parameters {
+  real<lower = 0> theta;
+}
+transform parameters {
+  real<lower = 0> theta_inv;
+  theta_inv <- 1/theta;
+}
+model {
+  theta ~ gamma(2, 4);
+}
+```
+
+
+---
+
+### Exercise - Change of Variable:
+
+```{r, eval=FALSE, echo=FALSE}
+parameters {
+  real<lower = 0> theta_inv;
+}
+transform parameters {
+  real<lower = 0> theta;
+  theta <- 1/theta_inv;
+}
+model {
+  theta_inv ~ gamma(2, 4);
+  increment_log_prob(-2 log(theta_inv))
+}
+```
+
+
+---
+
+## Truncated Data:
+
++ Trucated data: measurements are only reported if they fall with a boundary
+
++ Truncation in Stan is restricted to:
+    + univariate distributions
+    + with available log cumulative distribution
+
++ To understand truncation better, you can consider a detector which only is activated if the signals it detects are above a certain limit. 
+
++ There may be lots of weak incoming signals, but we can never tell using this detector.
+
+---
+
+## Truncated Data:
+
+```{r, eval = FALSE}
+data {
+  int<lower=0> N;
+  real U;
+  real<upper=U> y[N];
+}
+parameters {
+  real mu;
+  real<lower=0> sigma;
+}
+model {
+  for (n in 1:N)
+    y[n] ~ normal(mu,sigma) T[,U];
+}
+```
+
+
+---
+
+## Censored Data:
+
+  + Under censoring, some observations may be censored, meaning that we only know that they are below (or above) some bound but we don't know their actual values.
+  
+  + Unlike with truncated data, the number of data points that were censored is known.
+  
+  + It's wrong to ignore censored data!
+  
+  + One way to model censored data is to treat the censored data as missing data that is constrained to fall in the censored range of values. 
+
+  + Note that Stan does not allow unknown values in its arrays or matrices
+  
+  + So we can treat censored data as unknown parameters!
+  
+  + In that case, censored data will be sampled like other parameters
+
+---
+
+## Censored Data:
+
+```{r, eval=FALSE}
+data {
+  int<lower=0> N_obs;
+  int<lower=0> N_cens;
+  real y_obs[N_obs];
+  real<lower=max(y_obs)> U;
+}
+parameters {
+  real<lower=U> y_cens[N_cens];
+  real mu;
+  real<lower=0> sigma;
+} 
+model {
+  y_obs ~ normal(mu,sigma);
+  y_cens ~ normal(mu,sigma);
+}
+```
+
+
+---
+
+## Censored Data - Likelihood Approach:
+
+  + it is not necessary to impute values.
+  
+  + Instead, the values can be integrated out:
+
+  + Each censored data point has a probability of:
+$$Pr[Y > U] = \int_{U}^{\infty} P(Y| ...) dY = 1 - cdf(U)$$
+
+  + the complementary CDF above in Stan is of the form:
+    + distName_ccdf_log
+
+
+---
+
+## Censored Data - Likelihood Approach:
+
+```{r, eval=FALSE}
+data {
+  int<lower=0> N_obs;
+  int<lower=0> N_cens;
+  real y_obs[N_obs];
+  real<lower=max(y_obs)> U;
+}
+parameters {
+  real mu;
+  real<lower=0> sigma;
+}
+model {
+  y_obs ~ normal(mu,sigma);
+  increment_log_prob(N_cens * normal_ccdf_log(U,mu,sigma));
+}
+```
+
+
+---
+
+## Examples:
+
+    
