@@ -403,3 +403,9 @@ real a[3,4];
 vector[7] mu[3]; // 3-dimensional array of vectors of length 7
 ```
 
+
+---
+
+## Statements:
+
+
