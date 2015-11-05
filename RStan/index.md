@@ -408,4 +408,14 @@ vector[7] mu[3]; // 3-dimensional array of vectors of length 7
 
 ## Statements:
 
++ Assignment Statements
 
++ Sampling Statement
+
++ Log Probability Increment Statement
+
++ For Loops
+
++ Conditional Statements
+
++ Print
