@@ -157,6 +157,8 @@
   <article data-timings="">
     <p>Shiny gives you plenty of control over layout. Today we&#39;ll stick with <code>sidebarLayout</code>.</p>
 
+<p>Besides the builtin helpers, it&#39;s possible to layout HTML elements directly.</p>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -200,7 +202,8 @@
                              label = &quot;Number of samples:&quot;,
                              min = 1, max = 100, value = c(50))
     ),
-    mainPanel(&quot;This text goes in the main part of the page&quot;, textOutput(&quot;summaries&quot;), plotOutput(&quot;samplePlot&quot;))
+    mainPanel(&quot;This text goes in the main part of the page&quot;,
+              textOutput(&quot;summaries&quot;), plotOutput(&quot;samplePlot&quot;))
   )
 ))
 </code></pre>
@@ -254,10 +257,43 @@ shinyServer(
 
 <slide class="" id="slide-11" style="background:;">
   <hgroup>
+    <h2>Look at an example running app</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Navigate your web browser to</p>
+
+<pre><code>http://shiny.rstudio.com/gallery/faithful.html
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Many ways of launching an app</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s say you have a shiny app on your local file storage.</p>
+
+<ul>
+<li>R&#39;s command prompt, using the funciton <code>runApp</code></li>
+<li>the terminal, <code>R -e &quot;shiny::runApp(&#39;~/shinyapp&#39;)&quot;</code></li>
+<li>from RStudio, using the &quot;Run App&quot; in the top-right corner of the source panel. Rstudio seems to detect when the R file is for a shiny app.</li>
+</ul>
+
+<p>Shiny automatically re-loads on source file changes!... but only for <code>ui.r</code> and <code>server.r</code>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
     <h2>Try running the hello world app!</h2>
   </hgroup>
   <article data-timings="">
-    <p>Download the repo [1] from GitHub, and open the <code>shiny/hello_world/ui.r</code> and <code>shiny/hello_world/server.r</code> files in RStudio. Then click on &quot;Run App&quot; in the top-right corner of the source panel, or execute</p>
+    <p>Download the repo [1] from GitHub, and open the <code>shiny/hello_world/ui.r</code> and <code>shiny/hello_world/server.r</code> files in RStudio. Then click on &quot;Run App&quot;, or execute</p>
 
 <pre><code>runApp(&#39;/change/this/path/AdvancedRWorkshop/shiny/hello_world&#39;)
 </code></pre>
@@ -268,7 +304,7 @@ shinyServer(
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-12" style="background:;">
+<slide class="" id="slide-14" style="background:;">
   <hgroup>
     <h2>Exercises</h2>
   </hgroup>
@@ -288,7 +324,7 @@ shinyServer(
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-13" style="background:;">
+<slide class="" id="slide-15" style="background:;">
   <hgroup>
     <h2>A few words about how this works</h2>
   </hgroup>
@@ -308,7 +344,7 @@ shinyServer(
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-14" style="background:;">
+<slide class="" id="slide-16" style="background:;">
   <hgroup>
     <h2>More toys</h2>
   </hgroup>
@@ -323,7 +359,7 @@ shinyServer(
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-15" style="background:;">
+<slide class="" id="slide-17" style="background:;">
   <hgroup>
     <h2>1 layout tip: Tab Sets</h2>
   </hgroup>
@@ -348,7 +384,7 @@ shinyServer(
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-16" style="background:;">
+<slide class="" id="slide-18" style="background:;">
   <hgroup>
     <h2>Tables</h2>
   </hgroup>
@@ -367,7 +403,7 @@ vs.</li>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-17" style="background:;">
+<slide class="" id="slide-19" style="background:;">
   <hgroup>
     <h2>Debugging Shiny apps</h2>
   </hgroup>
@@ -388,7 +424,7 @@ vs.</li>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-18" style="background:;">
+<slide class="" id="slide-20" style="background:;">
   <hgroup>
     <h2>Advanced browsing</h2>
   </hgroup>
@@ -413,7 +449,7 @@ vs.</li>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-19" style="background:;">
+<slide class="" id="slide-21" style="background:;">
   <hgroup>
     <h2>DESCRIPTION</h2>
   </hgroup>
@@ -436,7 +472,7 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-20" style="background:;">
+<slide class="" id="slide-22" style="background:;">
   <hgroup>
     <h2>So, to share an app...</h2>
   </hgroup>
@@ -464,7 +500,7 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-21" style="background:;">
+<slide class="" id="slide-23" style="background:;">
   <hgroup>
     <h2>Sharing</h2>
   </hgroup>
@@ -480,12 +516,12 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-22" style="background:;">
+<slide class="" id="slide-24" style="background:;">
   <hgroup>
     <h2>Very important stuff</h2>
   </hgroup>
   <article data-timings="">
-    <p class='..'>that is not covered today, but you should be aware of.</p>
+    <p class='..'>that is not covered today, but is interesting.</p>
 
 <ul>
 <li>can store/query data using databases, dropbox, AWS S3, etc</li>
@@ -501,7 +537,25 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-23" style="background:;">
+<slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Example use cases</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>exploring a new data set</li>
+<li>making an interface for humans to label data</li>
+<li>getting points on hacker news</li>
+<li>creating dashboards that monitor real-time data</li>
+<li>make friends and influencing others</li>
+<li>educational tools</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-26" style="background:;">
   <hgroup>
     <h2>Resources</h2>
   </hgroup>
@@ -524,13 +578,19 @@ Type: Shiny
 <ul>
 <li><a href="http://shiny.rstudio.com/gallery/widget-gallery.html">http://shiny.rstudio.com/gallery/widget-gallery.html</a></li>
 </ul></li>
+<li>non-Rstudio gallery
+
+<ul>
+<li><a href="http://www.showmeshiny.com/">http://www.showmeshiny.com/</a></li>
+<li>and companion twitter, @showmeshiny</li>
+</ul></li>
 </ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-24" style="background:;">
+<slide class="" id="slide-27" style="background:;">
   <hgroup>
     <h2>Exercise 2</h2>
   </hgroup>
@@ -613,86 +673,104 @@ Type: Shiny
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=11 title='Try running the hello world app!'>
+        data-slide=11 title='Look at an example running app'>
          11
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=12 title='Exercises'>
+        data-slide=12 title='Many ways of launching an app'>
          12
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=13 title='A few words about how this works'>
+        data-slide=13 title='Try running the hello world app!'>
          13
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=14 title='More toys'>
+        data-slide=14 title='Exercises'>
          14
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=15 title='1 layout tip: Tab Sets'>
+        data-slide=15 title='A few words about how this works'>
          15
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=16 title='Tables'>
+        data-slide=16 title='More toys'>
          16
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=17 title='Debugging Shiny apps'>
+        data-slide=17 title='1 layout tip: Tab Sets'>
          17
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=18 title='Advanced browsing'>
+        data-slide=18 title='Tables'>
          18
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=19 title='DESCRIPTION'>
+        data-slide=19 title='Debugging Shiny apps'>
          19
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=20 title='So, to share an app...'>
+        data-slide=20 title='Advanced browsing'>
          20
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=21 title='Sharing'>
+        data-slide=21 title='DESCRIPTION'>
          21
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=22 title='Very important stuff'>
+        data-slide=22 title='So, to share an app...'>
          22
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=23 title='Resources'>
+        data-slide=23 title='Sharing'>
          23
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=24 title='Exercise 2'>
+        data-slide=24 title='Very important stuff'>
          24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='Example use cases'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='Resources'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='Exercise 2'>
+         27
       </a>
     </li>
   </ul>

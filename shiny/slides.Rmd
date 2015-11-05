@@ -84,6 +84,8 @@ shinyUI(fluidPage(
 
 Shiny gives you plenty of control over layout. Today we'll stick with `sidebarLayout`.
 
+Besides the builtin helpers, it's possible to layout HTML elements directly.
+
 ---
 
 ## Webpages of text are boring
@@ -112,7 +114,8 @@ shinyUI(fluidPage(
                              label = "Number of samples:",
                              min = 1, max = 100, value = c(50))
     ),
-    mainPanel("This text goes in the main part of the page", textOutput("summaries"), plotOutput("samplePlot"))
+    mainPanel("This text goes in the main part of the page",
+              textOutput("summaries"), plotOutput("samplePlot"))
   )
 ))
 ```
@@ -147,17 +150,36 @@ shinyServer(
 ```
 The 3rd case isn't really covered today.
 
+---
+## Look at an example running app
+
+Navigate your web browser to
+
+```
+http://shiny.rstudio.com/gallery/faithful.html
+```
+
+---
+## Many ways of launching an app
+Let's say you have a shiny app on your local file storage.
+
++ R's command prompt, using the funciton `runApp`
++ the terminal, `R -e "shiny::runApp('~/shinyapp')"`
++ from RStudio, using the "Run App" in the top-right corner of the source panel. Rstudio seems to detect when the R file is for a shiny app.
+
+Shiny automatically re-loads on source file changes!... but only for `ui.r` and `server.r`.
 
 ---
 ## Try running the hello world app!
 
-Download the repo [1] from GitHub, and open the `shiny/hello_world/ui.r` and `shiny/hello_world/server.r` files in RStudio. Then click on "Run App" in the top-right corner of the source panel, or execute
+Download the repo [1] from GitHub, and open the `shiny/hello_world/ui.r` and `shiny/hello_world/server.r` files in RStudio. Then click on "Run App", or execute
 
 ```
 runApp('/change/this/path/AdvancedRWorkshop/shiny/hello_world')
 ```
 
 [1] https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop
+
 
 ---
 ## Exercises
@@ -260,6 +282,7 @@ Tags: getting-started
 Type: Shiny
 ```
 
+
 ---
 ## So, to share an app...
 It depends on whether your audience can run it from R.
@@ -288,7 +311,7 @@ runGitHub("AdvancedRWorkshop", "UCIDataScienceInitiative", subdir="shiny/hello_w
 
 ---
 ## Very important stuff
-... that is not covered today, but you should be aware of.
+... that is not covered today, but is interesting.
 
 + can store/query data using databases, dropbox, AWS S3, etc
 + plugins exist for mapping, 3D scatterplots, networks, various D3 charts.
@@ -297,6 +320,15 @@ runGitHub("AdvancedRWorkshop", "UCIDataScienceInitiative", subdir="shiny/hello_w
 + it's easy to allow users to download data, e.g. data frames as CSV files
 + layout is completely customizable
 + seems like there's some support for interactive plots(!)
+
+---
+## Example use cases
++ exploring a new data set
++ making an interface for humans to label data
++ getting points on hacker news
++ creating dashboards that monitor real-time data
++ make friends and influencing others
++ educational tools
 
 ---
 ## Resources
@@ -308,6 +340,9 @@ The official documentation from RStudio is pretty good. A few pointers:
   + http://shiny.rstudio.com/gallery/
 + the widget gallery isolated uses for all of the builtin widgets
   + http://shiny.rstudio.com/gallery/widget-gallery.html
++ non-Rstudio gallery
+  + http://www.showmeshiny.com/
+  + and companion twitter, @showmeshiny
 
 ---
 ## Exercise 2
