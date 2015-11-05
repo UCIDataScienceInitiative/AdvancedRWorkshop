@@ -50,17 +50,14 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Introduction</h2>
+    <h2>Agenda</h2>
   </hgroup>
   <article data-timings="">
-    <p>1) The class will include 5 sessions:</p>
-
-<ul>
-<li>Session 1 (9-10:20): Data Types in R </li>
-<li>Session 2 (10:30-12): Control Structures and Functions</li>
-<li>Session 3 (12:30-1:50): Statistical Distributions in R</li>
-<li>Session 4 (2-3:20): Plotting and Data Visualization in R </li>
-<li>Session 5 (3:30-5): Statistical Analysis in R</li>
+    <ul>
+<li>Brief introduction to Bayesian Analysis</li>
+<li>Available software for Bayesian Analysis</li>
+<li>Bayesian Analysis using RStan</li>
+<li>Examples</li>
 </ul>
 
   </article>
@@ -68,8 +65,531 @@
 </slide>
 
 <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Bayesian Analysis</h2>
+  </hgroup>
   <article data-timings="">
-    
+    <p>Baye&#39;s Theorem:</p>
+
+<p>\[ P(\theta|Y) = \frac{P(Y | \theta) P(\theta)}{P(Y)}\]</p>
+
+<p>Where:</p>
+
+<ul>
+<li>\(\theta\) : unknown parameter(s)</li>
+<li>\(Y\) : observed data</li>
+</ul>
+
+<p>We can write the formula above as:
+\[ P(\theta|Y) \propto P(Y | \theta) P(\theta) = P(\theta, Y)\]</p>
+
+<p><strong>Goal</strong> : To characterize the posterior distribution \(P(\theta|Y)\)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Bayesian Analysis</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Posterior distribution \(P(\theta|Y)\) :</p>
+
+<ul>
+<li>1) may have a closed form (ex. conjugate prior)</li>
+<li>2) USUALLY doesn&#39;t have a closed form and is not analytically tractable! </li>
+</ul>
+
+<p>if (2), How to generate samples from \(P(\theta|Y)\) ?</p>
+
+<ul>
+<li><p>solution 1) MCMC: a class of algorithms for sampling from a probability distribution based on constructing a Markov chain that has the desired distribution as its equilibrium distribution. </p>
+
+<ul>
+<li>ref:<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.13.7133&amp;rep=rep1&amp;type=pdf">An Introduction to MCMC for Machine Learning</a></li>
+</ul></li>
+<li><p>solution 2) Variational Bayes: Approximate the posterior with a simpler distribution.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Bayesian Analysis</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Some examples of MCMC methods:</p>
+
+<ul>
+<li>Metropolis–Hastings algorithm</li>
+<li>Gibbs sampling</li>
+<li>Slice sampling</li>
+<li>Reversible-jump</li>
+<li>Hamiltonian Monte Carlo
+
+<ul>
+<li><a href="http://www.mcmchandbook.net/HandbookChapter5.pdf">MCMC Using Hamiltonian Dynamics</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Some Bayesian Analysis Packages:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>1) WinBUGS/OpenBUGS:</p>
+
+<ul>
+<li><a href="http://www.mrc-bsu.cam.ac.uk/software/bugs/">http://www.mrc-bsu.cam.ac.uk/software/bugs/</a></li>
+</ul>
+
+<p>2) JAGS:</p>
+
+<ul>
+<li><a href="http://mcmc-jags.sourceforge.net">http://mcmc-jags.sourceforge.net</a></li>
+</ul>
+
+<p>3) Stan:</p>
+
+<ul>
+<li><a href="http://mc-stan.org">http://mc-stan.org</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>What is Stan?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>&quot;a modeling language in which statisticians could write their models in familiar notation that could be transformed to efficient C++ code and then compiled into an efficient executable program.&quot;</p></li>
+<li><p>Stan uses HMC method for sampling as opposed to Gibbs sampling.</p></li>
+<li><p>Stan automatically adapt the number of steps during HMC sampling using No-U-Turn (NUTS) sampler:</p>
+
+<ul>
+<li>ref: Hoffman and Gelman, 2011, 2014</li>
+</ul></li>
+<li><p>Stan&#39;s interfaces include: RStan, PyStan, CmdStan, ...</p></li>
+<li><p>to install stan, please check:</p>
+
+<ul>
+<li><a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Where to get help?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>1) Stan User&#39;s Guide &amp; Reference Manual:</p>
+
+<ul>
+<li>Current version: 2.8.0</li>
+<li>You can access it <a href="https://github.com/stan-dev/stan/releases/download/v2.8.0/stan-reference-2.8.0.pdf">here</a></li>
+</ul>
+
+<p>2)  Stan User&#39;s group:</p>
+
+<ul>
+<li><a href="https://groups.google.com/forum/#!forum/stan-users">https://groups.google.com/forum/#!forum/stan-users</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Simple Posterior Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Consider an example of flipping a coin N times where \(P(head) = \theta\):
+\[P(Y | \theta) \propto \theta^Y (1 - \theta)^{(N - Y)}\]</p></li>
+<li><p>Now, suppose \(\theta\) (probability of head) is unknown. We can assume a prior of the form:
+\[\theta \sim Beta(\alpha, \beta)\]</p></li>
+<li><p>Under this setting, posterior of \(\theta\) would be of the form:
+\[P(\theta|Y) \propto P(Y | \theta) P(\theta)\]</p></li>
+<li><p>It&#39;s then easy to show:
+\[P(\theta|Y) \propto \theta^{(\alpha + Y - 1)} (1 - \theta)^{(\beta + (N - Y) - 1)}\]
+\[P(\theta|Y) \propto Beta\big(\alpha + Y, \beta + (N - Y) \big)\]</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Simple Posterior Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Life is easy when posterior distribution is tractable :)</li>
+</ul>
+
+<pre><code class="r">N &lt;- 200
+theta.true &lt;- 0.4
+Y &lt;- rbinom(1, size=N, prob = 0.4)
+alpha &lt;- 2
+beta &lt;- 2
+
+PostSample &lt;- rbeta(10000, shape1 = alpha + Y,  shape2 = beta + (N - Y))
+
+# Posterior Mean:
+mean(PostSample)
+</code></pre>
+
+<pre><code>## [1] 0.3778661
+</code></pre>
+
+<pre><code class="r"># 95% CR:
+quantile(PostSample, probs = c(0.025, 0.975))
+</code></pre>
+
+<pre><code>##      2.5%     97.5% 
+## 0.3131006 0.4442364
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Simple Posterior Example in Stan</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>There are 3 steps needed to implement this model in Stan:</p>
+
+<p>1) Writing the model in Stan</p>
+
+<p>2) Initializing the data for the model</p>
+
+<p>3) Running the model</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Simple Posterior Example in Stan (Stan Model)</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data {
+  int&lt;lower = 1&gt; N;
+  int&lt;lower = 0, upper = N&gt; Y;
+  real&lt;lower = 0&gt; alpha;
+  real&lt;lower = 0&gt; beta;
+}
+parameters {
+  real&lt;lower = 0, upper = 1&gt; theta;
+}
+model {
+  theta ~ beta(alpha, beta);
+  Y ~ binomial(N, theta);
+}
+</code></pre>
+
+<ul>
+<li>Good practice to save your stan model as a .txt or .stan into a file.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Simple Posterior Example in Stan</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r"># We already have N, Y,alpha, and beta
+data = list(N = N, Y = Y, alpha = alpha, beta = beta)
+fit &lt;- stan(&quot;SimpleCoinEx.stan&quot;, data = data, chains = 1, iter = 1000, warmup = 200)
+summary(fit)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Bayesian Modeling with Stan (R section)</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>stan(): does all of the work of fitting a Stan model and returning the results. It includes:</p>
+
+<ul>
+<li>1) translating the Stan model to C++ code</li>
+<li>2) Then, the C++ code is compiled into a binary shared object, which is loaded into the current R session </li>
+<li>3) Finally, samples are drawn and wrapped in an object</li>
+</ul></li>
+<li><p>stan(): can also be used to sample again from a fitted model under different settings (e.g., different iter).</p>
+
+<ul>
+<li>To do so, fit argument should be provided</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Bayesian Modeling with Stan (R section)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Useful functions to try on an stan fit:</p>
+
+<ul>
+<li><p>summary()</p></li>
+<li><p>print()</p></li>
+<li><p>traceplot()</p></li>
+<li><p>extract()</p></li>
+<li><p>launch_shinystan{shinystan}</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Bayesian Modeling with Stan (Stan Model)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The rest of the workshop will be on details of writing stan models. In particular, we will learn more on:</p>
+
+<ul>
+<li><p>Stan&#39;s Program Blocks</p></li>
+<li><p>Data Types, Variable Declaration, and Statements</p></li>
+<li><p>Log Likelihood Specification</p></li>
+<li><p>User-Defined Functions</p></li>
+<li><p>Examples </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Stan&#39;s Program Blocks</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">functions{
+}
+data {
+}
+transformed data {
+}
+parameters {
+}
+transformed parameters {
+}
+model {
+}
+generated quantities{ 
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h3>function block:</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>This optional block contains user-defined functions (if there is any)</p></li>
+<li><p>more on this later</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h3>data Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>All variables that are read in as data are declared here</p></li>
+<li><p>Data are read only once!</p></li>
+<li><p>The data block does not allow statements</p></li>
+<li><p>Input data should jibe with the declared data in this block:</p>
+
+<ul>
+<li>within the same range</li>
+<li>having the same size</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h3>transformed data Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Defining variables that are fixed when running the program</p></li>
+<li><p>No reading from external sources</p></li>
+<li><p>Variables defined earlier in the data block may be used here</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h3>parameters Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Variables defined in this block are sampled</p></li>
+<li><p>Variables defined as parameters cannot be directly assigned</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h3>transformed parameters Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>There is no need to perform a direct sampling for variables declared under this block</p></li>
+<li><p>Variables that are defined in terms of data or transformed data only (fixed) should be defined in the transformed data block. Those variables are illegal under this block</p></li>
+<li><p>Variables defined here will be written as part of the output</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h3>model Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>likelihood (the model/distribution the data come from) is defined under this block</p></li>
+<li><p>priors on the parameters are also defined in this block</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h3>generated quantities Block</h3>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>This block is executed only after a sample has been generated</p></li>
+<li><p>Therefore, nothing in the generated quantities block affects the sampled parameter values</p></li>
+<li><p>Some applications of this block are:</p>
+
+<ul>
+<li>to calculate posterior expectations</li>
+<li>transforming parameters for reporting</li>
+<li>generating predictions for new data</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Data Types and Variable Declarations:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Variables should have a declared data type. Stan&#39;s data types include:</p></li>
+<li><p>1) Primitive Data Types:</p>
+
+<ul>
+<li>1.1) real</li>
+<li>1.2) int</li>
+<li>1.3) constrained by using lower or upper</li>
+</ul></li>
+<li><p>2) Compound Data Types:</p>
+
+<ul>
+<li>2.1) vector (of real values)</li>
+<li>2.2) row_vector (of real values)</li>
+<li>2.3) matrix (of real values)</li>
+<li>2.4) constrained include: simplex, unit_vector, ordered, positive_ordered, corr_matrix, cov_matrix, cholesky_factor_cov, cholesky_factor_cor</li>
+</ul></li>
+<li><p>3) Arrays:</p>
+
+<ul>
+<li>3.1) three-dimensional arrays of integers</li>
+<li>3.2) four-dimensional arrays of row_vectors</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Data Types and Variable Declarations:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r"># primitive:
+int&lt;lower = 1&gt; N;
+real&lt;lower = 0, upper = 1&gt; theta;
+
+# vector:
+vector[3] myVec;
+vector&lt;lower = 0&gt;[3] myConsVec;
+simplex[5] theta;
+
+# matrix:
+matrix[3,3] A;
+corr_matrix[3] Sigma;
+cholesky_factor_corr[5] L;
+
+# array:
+int n[5]; // n is an array of 5 integers
+real a[3,4];
+vector[7] mu[3]; // 3-dimensional array of vectors of length 7
+</code></pre>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -80,14 +600,152 @@
     <ul>
       <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=1 title='Introduction'>
+        data-slide=1 title='Agenda'>
          1
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='NA'>
+        data-slide=2 title='Bayesian Analysis'>
          2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Bayesian Analysis'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Bayesian Analysis'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Some Bayesian Analysis Packages:'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='What is Stan?'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Where to get help?'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Simple Posterior Example'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Simple Posterior Example'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Simple Posterior Example in Stan'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Simple Posterior Example in Stan (Stan Model)'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Simple Posterior Example in Stan'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Bayesian Modeling with Stan (R section)'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Bayesian Modeling with Stan (R section)'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Bayesian Modeling with Stan (Stan Model)'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Stan&#39;s Program Blocks'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='function block:'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='data Block'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='transformed data Block'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='parameters Block'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='transformed parameters Block'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='model Block'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='generated quantities Block'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='Data Types and Variable Declarations:'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='Data Types and Variable Declarations:'>
+         25
       </a>
     </li>
   </ul>
