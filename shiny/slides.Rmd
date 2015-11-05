@@ -118,5 +118,201 @@ shinyUI(fluidPage(
 ```
 
 ---
-## Try running the hello world app
+## Server
+The user's input is stored in `input$n_samples` - this is because the first argument to `sliderInput` was `"n_samples"`! The server doesn't care what input it came from.
 
+```
+shinyServer(
+  function(input, output) {
+    output$summaries <- renderText(paste("n:", input$n_samples))
+    output$samplePlot <- renderPlot(hist(rnorm(input$n_samples)))
+  }
+)
+```
+
+---
+## How the server code is executed
+3 different cases!
+
+```
+# Case 1: run once, when app is launched
+
+shinyServer(
+  function(input, output) {
+    # Case 2: run every time a user loads the app page
+    output$summaries <- renderText(paste("n:", input$n_samples))
+    output$samplePlot <- renderPlot(hist(rnorm(input$n_samples)))
+  }
+)
+```
+The 3rd case isn't really covered today.
+
+
+---
+## Try running the hello world app!
+
+Download the repo [1] from GitHub, and open the `shiny/hello_world/ui.r` and `shiny/hello_world/server.r` files in RStudio. Then click on "Run App" in the top-right corner of the source panel, or execute
+
+```
+runApp('/change/this/path/AdvancedRWorkshop/shiny/hello_world')
+```
+
+[1] https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop
+
+---
+## Exercises
+
++ adding other controls
+  + changing the mean
+  + chaning the standard deviation
++ try switching to a "tabset" layout, with a separate tab for the summary stats (instead of having the summary stats in the same main panel as the graphic)
++ add a drop-down menu which can change the distribution
+
+---
+## A few words about how this works
++ the web depends on client-server architecture
++ the idea is that many clients can connect to a single server
++ the "server" can be your own laptop, or it could a computer in the basement, or a cloud server hosted by Amazon.
++ client = the browser (for us).
++ the browser handles the layout and the human interaction
++ shiny provides code for _both_ the client and the server.
++ when the client and the server are communicating, they are basically sending back and forth R lists.
++ the variety different languages/technologies is a big challenge in web development
+
+---
+## More toys
+ + `renderTable` / `tableOutput` for simple tables
+ + `renderText` / `verbatimTextOutput` for formattted R output
+ + `renderPlot` / `renderPlot` for plots (ggplot2 works fine!)
+
+
+---
+## 1 layout tip: Tab Sets
+In our previous example, we had the following main panel.
+
+```
+mainPanel("This text goes in the main part of the page",
+          textOutput("summaries"), plotOutput("samplePlot"))
+```
+
+If we have different types of output (e.g. plot, table, model output, etc) we can put each in a "Tab Set", which goes in the main panel, like this:
+
+```
+mainPanel(
+    tabsetPanel(
+      tabPanel("Plot", plotOutput("diamond.plot")), 
+      tabPanel("Summary", textOutput("summaries")) 
+    )
+)
+```
+
+---
+## Tables
+
+ + `renderTable` / `tableOutput` for simple tables
+ vs.
+ + `renderDataTable` / `dataTableOutput` for ~fancy~ tables 
+
+Data tables features include sorting, filtering, and paging. Named after the JavaScript library, DataTable, which is used to create the tables in the browser.
+
+Simple tables are fine for e.g. `head(my.data.frame)`, but generally DataTables are preferred because they are so much more flexible, and just as easy to include in your app.
+
+---
+## Debugging Shiny apps
+
++ printing intput variables can only be done inside a reactive context.
++ `browser` is often much more useful
+  + allows you to explore variables at any particular point in code
+  + "breakpoint"
+  + use `Q` to escape the `browser` environment
++ (you can also use `browser` at any time!)
+
+---
+## Advanced browsing
+
+### Conditional browsing
+
+Only trigger the browser when the user enters a certain input
+
++ Only enter browser if the `price` input is greater than 2000:
++ `browser(expr=input$price > 2000)`
+
+### Custom error handling
+This is also generally useful. Automatically enter browser on any error:
+
+```
+options(error = browser)
+```
+
+---
+## DESCRIPTION
+
++ useful metadata for distribution
++ also a way to enable `Showcase` mode
+
+```
+Title: My app
+Author: RStudio, Inc.
+AuthorUrl: http://www.rstudio.com/
+License: GPL-3
+DisplayMode: Showcase
+Tags: getting-started
+Type: Shiny
+```
+
+---
+## So, to share an app...
+It depends on whether your audience can run it from R.
+
+### From R
++ `runApp`: local files
++ `runUrl`: downloadable files over the internet
++ `runGitHub`: apps whose source is on GitHub
++ `runGist`: apps whose source is in a Gist
+
+### Not from R
++ it must be on a server which can be reached by your audience.
++ Shinyapps.io $$$
++ Shiny Server (if anybody is interested in helping to help setup)
+
+---
+## Sharing
+
+If the app is on GitHub, then it's easy to start it locally using the `runGitHub` function. e.g.
+
+```
+runGitHub("AdvancedRWorkshop", "UCIDataScienceInitiative", subdir="shiny/hello_world")
+```
+
+`runGist` is a similar function for running apps whose source is stored in gists.
+
+---
+## Very important stuff
+... that is not covered today, but you should be aware of.
+
++ can store/query data using databases, dropbox, AWS S3, etc
++ plugins exist for mapping, 3D scatterplots, networks, various D3 charts.
++ reactivity is for optimizing the server computation to re-use as much as possible
++ Shiny apps can be defined in RMarkdown reports to produce "interactive documents"
++ it's easy to allow users to download data, e.g. data frames as CSV files
++ layout is completely customizable
++ seems like there's some support for interactive plots(!)
+
+---
+## Resources
+
+The official documentation from RStudio is pretty good. A few pointers:
++ The cheatsheet is a great summary
+  + http://shiny.rstudio.com/images/shiny-cheatsheet.pdf
++ The gallery has lots of useful examples of complete apps
+  + http://shiny.rstudio.com/gallery/
++ the widget gallery isolated uses for all of the builtin widgets
+  + http://shiny.rstudio.com/gallery/widget-gallery.html
+
+---
+## Exercise 2
++ For this exercise, you are invited to do _whatever_ you want with Shiny.
++ Suggested exercise: build, from scratch, an app that will explore the `diamonds` dataset of ggplot2 fame.
++ controls: scale, with 2 knobs, for subsetting the data
++ the server should subset the data accordingly and return a plot of the data over that subset
++ then add a checkbox for making the dots transparent
