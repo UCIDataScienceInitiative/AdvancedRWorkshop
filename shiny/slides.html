@@ -243,13 +243,14 @@
 shinyServer(
   function(input, output) {
     # Case 2: run every time a user loads the app page
-    output$summaries &lt;- renderText(paste(&quot;n:&quot;, input$n_samples))
+    output$summaries &lt;- renderText({
+      # Case 3: run every time this input, n_samples, changes
+      paste(&quot;n:&quot;, input$n_samples)
+    })
     output$samplePlot &lt;- renderPlot(hist(rnorm(input$n_samples)))
   }
 )
 </code></pre>
-
-<p>The 3rd case isn&#39;t really covered today.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -353,6 +354,7 @@ shinyServer(
 <li><code>renderTable</code> / <code>tableOutput</code> for simple tables</li>
 <li><code>renderText</code> / <code>verbatimTextOutput</code> for formattted R output</li>
 <li><code>renderPlot</code> / <code>renderPlot</code> for plots (ggplot2 works fine!)</li>
+<li><code>actionButton</code> for triggering actions on server</li>
 </ul>
 
   </article>
@@ -474,6 +476,89 @@ Type: Shiny
 
 <slide class="" id="slide-22" style="background:;">
   <hgroup>
+    <h2>Reactivity</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>programming style around <em>reacting</em> to user input</li>
+<li>you&#39;ve already seen examples: the <code>render*</code> functions!</li>
+<li>2 examples which illustrate reactivity controls.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Reactivity #1</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><code>observeEvent</code> triggers code in 2nd arg when 1st arg changes</p>
+
+<pre><code># in UI
+textInput(&quot;a&quot;, &quot;&quot;)
+actionButton(&quot;go&quot;, &quot;Click go!&quot;)
+
+# in server
+shinyServer(function(input, output){
+ observeEvent(input$go,
+              {
+                # do something special
+                # like start &quot;go&quot;ing
+              }
+      )
+})
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Reactivity #2: modularing reactions</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Useful if reactive context need to share objects.</p>
+
+<pre><code># in UI
+textInput(&quot;a&quot;, &quot;&quot;)
+textInput(&quot;b&quot;, &quot;&quot;)
+
+# in server, an output depends on a function of 2 inputs
+# so the output will change when either input changes
+shinyServer(function(input, output){
+  re &lt;- reactive({
+    paste(input$a, input$b)
+  })
+  # NB: re is a function!
+  output$z &lt;- renderText({ re() })
+})
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Interactive documents with RMarkdown</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>&quot;the ultimate R reporting tool&quot;</li>
+<li>RMarkdown documents have a YAML header</li>
+<li>see example</li>
+<li>how does RMarkdown which blocks are ui and which are server? IDK</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-26" style="background:;">
+  <hgroup>
     <h2>So, to share an app...</h2>
   </hgroup>
   <article data-timings="">
@@ -500,7 +585,7 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-23" style="background:;">
+<slide class="" id="slide-27" style="background:;">
   <hgroup>
     <h2>Sharing</h2>
   </hgroup>
@@ -516,7 +601,7 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-24" style="background:;">
+<slide class="" id="slide-28" style="background:;">
   <hgroup>
     <h2>Very important stuff</h2>
   </hgroup>
@@ -526,8 +611,8 @@ Type: Shiny
 <ul>
 <li>can store/query data using databases, dropbox, AWS S3, etc</li>
 <li>plugins exist for mapping, 3D scatterplots, networks, various D3 charts.</li>
-<li>reactivity is for optimizing the server computation to re-use as much as possible</li>
-<li>Shiny apps can be defined in RMarkdown reports to produce &quot;interactive documents&quot;</li>
+<li>there&#39;s more reactivity stuff</li>
+<li>Shiny apps can be defined (e.g. in a library) as a single function</li>
 <li>it&#39;s easy to allow users to download data, e.g. data frames as CSV files</li>
 <li>layout is completely customizable</li>
 <li>seems like there&#39;s some support for interactive plots(!)</li>
@@ -537,7 +622,7 @@ Type: Shiny
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-25" style="background:;">
+<slide class="" id="slide-29" style="background:;">
   <hgroup>
     <h2>Example use cases</h2>
   </hgroup>
@@ -549,13 +634,14 @@ Type: Shiny
 <li>creating dashboards that monitor real-time data</li>
 <li>make friends and influencing others</li>
 <li>educational tools</li>
+<li>exploring Bayesian MCMC output: ShinyStan</li>
 </ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-26" style="background:;">
+<slide class="" id="slide-30" style="background:;">
   <hgroup>
     <h2>Resources</h2>
   </hgroup>
@@ -584,13 +670,14 @@ Type: Shiny
 <li><a href="http://www.showmeshiny.com/">http://www.showmeshiny.com/</a></li>
 <li>and companion twitter, @showmeshiny</li>
 </ul></li>
+<li>StackOverflow</li>
 </ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-27" style="background:;">
+<slide class="" id="slide-31" style="background:;">
   <hgroup>
     <h2>Exercise 2</h2>
   </hgroup>
@@ -739,38 +826,62 @@ Type: Shiny
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=22 title='So, to share an app...'>
+        data-slide=22 title='Reactivity'>
          22
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=23 title='Sharing'>
+        data-slide=23 title='Reactivity #1'>
          23
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=24 title='Very important stuff'>
+        data-slide=24 title='Reactivity #2: modularing reactions'>
          24
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=25 title='Example use cases'>
+        data-slide=25 title='Interactive documents with RMarkdown'>
          25
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=26 title='Resources'>
+        data-slide=26 title='So, to share an app...'>
          26
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=27 title='Exercise 2'>
+        data-slide=27 title='Sharing'>
          27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='Very important stuff'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='Example use cases'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Resources'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Exercise 2'>
+         31
       </a>
     </li>
   </ul>
