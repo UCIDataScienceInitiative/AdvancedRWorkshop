@@ -18,12 +18,107 @@ github:
 ## Introduction
 
 
-1) The class will include 5 sessions:
-  + Session 1 (9-10:20): Data Types in R 
-  + Session 2 (10:30-12): Control Structures and Functions
-  + Session 3 (12:30-1:50): Statistical Distributions in R
-  + Session 4 (2-3:20): Plotting and Data Visualization in R 
-  + Session 5 (3:30-5): Statistical Analysis in R
+
++ Markdown is a simple formatting language designed to make authoring content easy for everyone.
+
++ Rather than writing complex markup code (e.g. HTML or LaTeX), Markdown enables the use of a syntax much more like plain-text email.
+
++ R Markdown is an authoring format that enables easy creation of dynamic documents (reports, presentations, ...)
+
++ R Markdown combines markdown (an easy-to-write plain text format) with R
+
++ R Markdown documents are fully reproducible 
 
 ---
 
+##  Installation
+
++ We need to install two packages: knitr, rmarkdown
+
++ To install these packages, you can simply run:
+
+```r
+install.packages("rmarkdown")
+install.packages("knitr")
+```
+
++ Once installed, run:
+
+```r
+library(knitr)
+library(rmarkdown)
+```
+
++ And let's open a markdown document
+
+---
+
+## Where to learn?
+
++ Check out the R-Markdown Cheat Sheet:
+  + http://shiny.rstudio.com/articles/rm-cheatsheet.html
+  
++ Check out knitr website:
+  + http://yihui.name/knitr/
+
++ R Markdown Reference Guide:
+  + https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
+
+
+---
+
+## R-Markdown - Output formats:
+
++ By using [pandoc] (http://pandoc.org), you can have different outputs:
+
+  + html_document
+  + pdf_document
+  + word_document
+  + beamer_document
+  + ioslides_presentation
+
+
+---
+
+## R-Markdown - How to Embed R codes?
+
++ inline code: Surround code with back ticks and r.
+
++ code chunks: 
+
++ R chunks may include some options:
+  + eval
+  + echo
+  + warning, error, message
+  + tidy: to reformat code in a tidy way (default is FALSE)
+  + results: "markup", "asis", "hold", "hide"
+  + comment: Comment character to preface results with ("##")
+  + fig.width, fig.height (in inches)
+
+
+---
+
+## Interactive Documents:
+
++ With R Markdown, you can even report an interactive shiny document.
+
++ To do so:
+  + 1) keep output as html_output (or ioslides_presentation)
+  + 2) add shiny run time to YAML: runtime: shiny
+  + 3) Need Shiny input functions and Shiny render functions
+
++ More info: http://rmarkdown.rstudio.com/authoring_shiny.html
+
+
+---
+
+## Embeding Equations:
+
+  + One "dollar" sign for inline equation
+  
+  + Two "dollar" signs for display equation
+
+
+---
+
+## Let's have an example in RMarkdown:

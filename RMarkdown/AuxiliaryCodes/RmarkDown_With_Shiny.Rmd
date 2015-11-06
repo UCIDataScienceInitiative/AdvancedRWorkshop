@@ -1,0 +1,17 @@
+---
+title: "Line graph"
+output: html_document
+runtime: shiny
+---
+Choose a time series:
+```{r echo = FALSE}
+selectInput("data", "",
+c("co2", "lh"))
+```
+See a plot:
+```{r echo = FALSE}
+renderPlot({
+d <- get(input$data)
+plot(d)
+})
+```
