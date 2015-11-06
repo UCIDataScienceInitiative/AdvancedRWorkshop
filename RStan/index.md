@@ -250,6 +250,8 @@ The rest of the workshop will be on details of writing stan models. In particula
 
 + Data Types, Variable Declaration, and Statements
 
++ Operators & Built-In Functions:
+
 + User-Defined Functions
 
 + Reparameterization and Change of Variables
@@ -483,6 +485,32 @@ else if (conditionN)
 else
   elseStatement
 ```
+
+---
+
+## Operators:
+
++ Logical Operators:
+    + ||, &&, ==, !=, <, <=, >, >=
+    
++ Arithmatic Operators:
+    + .*, ./: element-wise matrix operators
+    + ': to get transpose of a matrix
+    + For a complete list of operators, please visit the User's manual
+        + Page 306 - User's Manual 2.8.0 !
+
+---
+
+## Built-In Functions:
+
++ Stan includes many built-in functions. Some examples are:
+
+  + determinant(): determinant of a matrix
+  + inverse(): inverse of a matrix
+  + inverse_spd(): The inverse of A where A is symmetric, positive definite.
+  + eigenvalues_sym(): returns the vector of eigenvalues of a symmetric matrix A in ascending order
+  
+  + For more info, please read "Built-in Functions" in the User's Manual 2.8.0.
 
 ---
 
@@ -777,6 +805,86 @@ model {
 
 ---
 
-## Examples:
+## Example 1 - Revisiting the Coin Flip example:
 
+### Borrowed from Daniel Lee (@djsyclik)
+
+
+```r
+data {
+  int N;
+  int Y[N];
+}
+parameters {
+  real<lower=0, upper=1> theta;
+} 
+model {
+  Y ~ bernoulli(theta);
+}
+```
+
+
+---
+
+## Example 1 - Revisiting the Coin Flip example:
+
++ Alternatively, we can specify the model using the log likelihood approach:
+
+
+```r
+...
+model {
+  for (n in 1:N) 
+    increment_log_prob(bernoulli_log(Y[n], theta));
+}
+```
+
++ Instead of using bernoulli_log() function in Stan, you can explicitely specify the log likelihood as:
+
+```r
+...
+model {
+  for (n in 1:N) 
+    increment_log_prob(log(if_else(y[n] == 1, theta, 1-theta)));
+}
+```
+
+
+---
+
+## Example 1 - Revisiting the Coin Flip example:
+
+  + Finally, you can use vectorized operations so you can get rid of loops:
+
+```r
+...
+model {
+  increment_log_prob(bernoulli_log(Y, theta));
+}
+```
+
+---
+
+## Exercise - Zero-Inflated Poisson
+  + source: User's Manual - Page 108
+  
+  + Consider a zero-inflated poisson distribution where:
+    + with probability $\theta$, we draw a zero
+    + with probability $1 - \theta$, we draw from $Poisson(\lambda)$
+    + this means:
+    $$p(y_n | \theta, \lambda) = \begin{cases}
+\theta + (1 - \theta) \times Poisson(0|\lambda) & \text{if }y_n = 0\\
+(1 - \theta) \times Poisson(y_n|\lambda) & \text{if }y_n \ne 0\\
+\end{cases}$$
+
+    + How to implement this in stan?
     
+
+---
+
+## Exercise - Zero-Inflated Poisson (Solution)    
+
+
+---
+
+## The rest of the class will be on group exercises!
