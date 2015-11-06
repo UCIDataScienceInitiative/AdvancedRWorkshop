@@ -932,7 +932,7 @@ $$y_i = \alpha + \beta x_i + \epsilon_i$$
 
 + We can then write:
 $$Z_i \sim Categorical(\theta)$$
-$$y_i \sim Normal(\mu_{z_i}, \sigma_{z_i})$$
+$$y_i \sim Normal(\mu_{z_i}, \sigma)$$
 
 
 ---
@@ -940,11 +940,11 @@ $$y_i \sim Normal(\mu_{z_i}, \sigma_{z_i})$$
 ## Exercise4: Finite Mixtures
 
 + By summing over the latent $Z_i$'s, we get:
-$$P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma_k)$$
+$$P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma)$$
 
-+ Consider a mixutre of two Normal distributions: N(-1, 2), N(3, 1)
++ Consider a mixutre of two Normal distributions: N(-2.5, 1), N(2.5, 1)
 
-+ Consider mixing proportion as: $\theta = (0.3, 0.7)$
++ Consider mixing proportion as: $\theta = (0.4, 0.6)$
 
 + For this problem:
     + step1) simulate data

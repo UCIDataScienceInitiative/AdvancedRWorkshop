@@ -1245,7 +1245,7 @@ model {
 <li><p>Per each \(Y_i\), there is a corresponding latent variable \(z_i \in \{ 1, 2, \dots, K\}\)</p></li>
 <li><p>We can then write:
 \[Z_i \sim Categorical(\theta)\]
-\[y_i \sim Normal(\mu_{z_i}, \sigma_{z_i})\]</p></li>
+\[y_i \sim Normal(\mu_{z_i}, \sigma)\]</p></li>
 </ul>
 
   </article>
@@ -1259,9 +1259,9 @@ model {
   <article data-timings="">
     <ul>
 <li><p>By summing over the latent \(Z_i\)&#39;s, we get:
-\[P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma_k)\]</p></li>
-<li><p>Consider a mixutre of two Normal distributions: N(-1, 2), N(3, 1)</p></li>
-<li><p>Consider mixing proportion as: \(\theta = (0.3, 0.7)\)</p></li>
+\[P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma)\]</p></li>
+<li><p>Consider a mixutre of two Normal distributions: N(-2.5, 1), N(2.5, 1)</p></li>
+<li><p>Consider mixing proportion as: \(\theta = (0.4, 0.6)\)</p></li>
 <li><p>For this problem:</p>
 
 <ul>
