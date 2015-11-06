@@ -1,0 +1,35 @@
+---
+title: "Samples and means"
+author: "Homer Strong"
+runtime: shiny
+date: "November 6, 2015"
+output: html_document
+---
+
+There are $n$ samples. How does the distribution change as there are more samples?
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+sliderInput("n_samples", label = "Number of samples:",
+              min=2, max=100, value = 50)
+
+sliderInput("mean", label = "Mean:",
+              min=-10, max=10, value = 0)
+```
+
+The sample mean is an unbiased estimator because $E(\bar{x})=\mu$. When the mean changes, the histogram should also change.
+
+```{r, echo = FALSE}
+re <- reactive({
+  rnorm(input$n_samples, mean=input$mean)
+})
+
+renderPlot({
+  qplot(re())
+})
+```
+The sample mean is $E(\bar{x})$=`r renderText({ mean(re()) })`.
+
+
+---
