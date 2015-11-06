@@ -53,14 +53,12 @@
     <h2>Introduction</h2>
   </hgroup>
   <article data-timings="">
-    <p>1) The class will include 5 sessions:</p>
-
-<ul>
-<li>Session 1 (9-10:20): Data Types in R </li>
-<li>Session 2 (10:30-12): Control Structures and Functions</li>
-<li>Session 3 (12:30-1:50): Statistical Distributions in R</li>
-<li>Session 4 (2-3:20): Plotting and Data Visualization in R </li>
-<li>Session 5 (3:30-5): Statistical Analysis in R</li>
+    <ul>
+<li><p>Markdown is a simple formatting language designed to make authoring content easy for everyone.</p></li>
+<li><p>Rather than writing complex markup code (e.g. HTML or LaTeX), Markdown enables the use of a syntax much more like plain-text email.</p></li>
+<li><p>R Markdown is an authoring format that enables easy creation of dynamic documents (reports, presentations, ...)</p></li>
+<li><p>R Markdown combines markdown (an easy-to-write plain text format) with R</p></li>
+<li><p>R Markdown documents are fully reproducible </p></li>
 </ul>
 
   </article>
@@ -68,6 +66,147 @@
 </slide>
 
 <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Installation</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>We need to install two packages: knitr, rmarkdown</p></li>
+<li><p>To install these packages, you can simply run:</p></li>
+</ul>
+
+<pre><code class="r">install.packages(&quot;rmarkdown&quot;)
+install.packages(&quot;knitr&quot;)
+</code></pre>
+
+<ul>
+<li>Once installed, run:</li>
+</ul>
+
+<pre><code class="r">library(knitr)
+library(rmarkdown)
+</code></pre>
+
+<ul>
+<li>And let&#39;s open a markdown document</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Where to learn?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Check out the R-Markdown Cheat Sheet:</p>
+
+<ul>
+<li><a href="http://shiny.rstudio.com/articles/rm-cheatsheet.html">http://shiny.rstudio.com/articles/rm-cheatsheet.html</a></li>
+</ul></li>
+<li><p>Check out knitr website:</p>
+
+<ul>
+<li><a href="http://yihui.name/knitr/">http://yihui.name/knitr/</a></li>
+</ul></li>
+<li><p>R Markdown Reference Guide:</p>
+
+<ul>
+<li><a href="https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf">https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>R-Markdown - Output formats:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>By using <a href="http://pandoc.org">pandoc</a>, you can have different outputs:</p>
+
+<ul>
+<li>html_document</li>
+<li>pdf_document</li>
+<li>word_document</li>
+<li>beamer_document</li>
+<li>ioslides_presentation</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>R-Markdown - How to Embed R codes?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>inline code: Surround code with back ticks and r.</p></li>
+<li><p>code chunks: </p></li>
+<li><p>R chunks may include some options:</p>
+
+<ul>
+<li>eval</li>
+<li>echo</li>
+<li>warning, error, message</li>
+<li>tidy: to reformat code in a tidy way (default is FALSE)</li>
+<li>results: &quot;markup&quot;, &quot;asis&quot;, &quot;hold&quot;, &quot;hide&quot;</li>
+<li>comment: Comment character to preface results with (&quot;##&quot;)</li>
+<li>fig.width, fig.height (in inches)</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Interactive Documents:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>With R Markdown, you can even report an interactive shiny document.</p></li>
+<li><p>To do so:</p>
+
+<ul>
+<li>1) keep output as html_output (or ioslides_presentation)</li>
+<li>2) add shiny run time to YAML: runtime: shiny</li>
+<li>3) Need Shiny input functions and Shiny render functions</li>
+</ul></li>
+<li><p>More info: <a href="http://rmarkdown.rstudio.com/authoring_shiny.html">http://rmarkdown.rstudio.com/authoring_shiny.html</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Embeding Equations:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>One &quot;dollar&quot; sign for inline equation</p></li>
+<li><p>Two &quot;dollar&quot; signs for display equation</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Let&#39;s have an example in RMarkdown:</h2>
+  </hgroup>
   <article data-timings="">
     
   </article>
@@ -86,8 +225,44 @@
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='NA'>
+        data-slide=2 title='Installation'>
          2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Where to learn?'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='R-Markdown - Output formats:'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='R-Markdown - How to Embed R codes?'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Interactive Documents:'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Embeding Equations:'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Let&#39;s have an example in RMarkdown:'>
+         8
       </a>
     </li>
   </ul>

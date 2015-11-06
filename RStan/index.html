@@ -383,6 +383,7 @@ summary(fit)
 <ul>
 <li><p>Stan&#39;s Program Blocks</p></li>
 <li><p>Data Types, Variable Declaration, and Statements</p></li>
+<li><p>Operators &amp; Built-In Functions:</p></li>
 <li><p>User-Defined Functions</p></li>
 <li><p>Reparameterization and Change of Variables</p></li>
 <li><p>Truncated Data</p></li>
@@ -690,6 +691,55 @@ else
 
 <slide class="" id="slide-30" style="background:;">
   <hgroup>
+    <h2>Operators:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Logical Operators:</p>
+
+<ul>
+<li>||, &amp;&amp;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</li>
+</ul></li>
+<li><p>Arithmatic Operators:</p>
+
+<ul>
+<li class='*,'>./: element-wise matrix operators</li>
+<li>&#39;: to get transpose of a matrix</li>
+<li>For a complete list of operators, please visit the User&#39;s manual
+
+<ul>
+<li>Page 306 - User&#39;s Manual 2.8.0 !</li>
+</ul></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Built-In Functions:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Stan includes many built-in functions. Some examples are:</p>
+
+<ul>
+<li>determinant(): determinant of a matrix</li>
+<li>inverse(): inverse of a matrix</li>
+<li>inverse_spd(): The inverse of A where A is symmetric, positive definite.</li>
+<li>eigenvalues_sym(): returns the vector of eigenvalues of a symmetric matrix A in ascending order</li>
+<li>For more info, please read &quot;Built-in Functions&quot; in the User&#39;s Manual 2.8.0.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-32" style="background:;">
+  <hgroup>
     <h2>User-Defined Functions:</h2>
   </hgroup>
   <article data-timings="">
@@ -721,7 +771,7 @@ else
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-31" style="background:;">
+<slide class="" id="slide-33" style="background:;">
   <hgroup>
     <h2>Reparameterization and Change of Variables:</h2>
   </hgroup>
@@ -744,7 +794,7 @@ else
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-32" style="background:;">
+<slide class="" id="slide-34" style="background:;">
   <hgroup>
     <h3>Reparameterization:</h3>
   </hgroup>
@@ -770,7 +820,7 @@ else
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-33" style="background:;">
+<slide class="" id="slide-35" style="background:;">
   <hgroup>
     <h3>Reparameterization (1st Parameterization):</h3>
   </hgroup>
@@ -795,7 +845,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-34" style="background:;">
+<slide class="" id="slide-36" style="background:;">
   <hgroup>
     <h3>Reparameterization (2nd Parameterization):</h3>
   </hgroup>
@@ -822,7 +872,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-35" style="background:;">
+<slide class="" id="slide-37" style="background:;">
   <hgroup>
     <h3>Change of Variables:</h3>
   </hgroup>
@@ -850,7 +900,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-36" style="background:;">
+<slide class="" id="slide-38" style="background:;">
   <hgroup>
     <h3>Change of Variables:</h3>
   </hgroup>
@@ -873,7 +923,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-37" style="background:;">
+<slide class="" id="slide-39" style="background:;">
   <hgroup>
     <h3>The distinction between Reparam. vs. Change of Var?</h3>
   </hgroup>
@@ -888,7 +938,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-38" style="background:;">
+<slide class="" id="slide-40" style="background:;">
   <hgroup>
     <h3>The distinction between Reparam. vs. Change of Var?</h3>
   </hgroup>
@@ -901,7 +951,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-39" style="background:;">
+<slide class="" id="slide-41" style="background:;">
   <hgroup>
     <h3>Exercise - Transformation:</h3>
   </hgroup>
@@ -911,7 +961,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-40" style="background:;">
+<slide class="" id="slide-42" style="background:;">
   <hgroup>
     <h3>Exercise - Change of Variable:</h3>
   </hgroup>
@@ -921,7 +971,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-41" style="background:;">
+<slide class="" id="slide-43" style="background:;">
   <hgroup>
     <h2>Truncated Data:</h2>
   </hgroup>
@@ -942,7 +992,7 @@ model{
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-42" style="background:;">
+<slide class="" id="slide-44" style="background:;">
   <hgroup>
     <h2>Truncated Data:</h2>
   </hgroup>
@@ -966,7 +1016,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-43" style="background:;">
+<slide class="" id="slide-45" style="background:;">
   <hgroup>
     <h2>Censored Data:</h2>
   </hgroup>
@@ -985,7 +1035,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-44" style="background:;">
+<slide class="" id="slide-46" style="background:;">
   <hgroup>
     <h2>Censored Data:</h2>
   </hgroup>
@@ -1011,7 +1061,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-45" style="background:;">
+<slide class="" id="slide-47" style="background:;">
   <hgroup>
     <h2>Censored Data - Likelihood Approach:</h2>
   </hgroup>
@@ -1032,7 +1082,7 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-46" style="background:;">
+<slide class="" id="slide-48" style="background:;">
   <hgroup>
     <h2>Censored Data - Likelihood Approach:</h2>
   </hgroup>
@@ -1057,12 +1107,169 @@ model {
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-47" style="background:;">
+<slide class="" id="slide-49" style="background:;">
   <hgroup>
-    <h2>Examples:</h2>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
+  </hgroup>
+  <article data-timings="">
+    <h3>Borrowed from Daniel Lee (@djsyclik)</h3>
+
+<pre><code class="r">data {
+  int N;
+  int Y[N];
+}
+parameters {
+  real&lt;lower=0, upper=1&gt; theta;
+} 
+model {
+  Y ~ bernoulli(theta);
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-50" style="background:;">
+  <hgroup>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Alternatively, we can specify the model using the log likelihood approach:</li>
+</ul>
+
+<pre><code class="r">...
+model {
+  for (n in 1:N) 
+    increment_log_prob(bernoulli_log(Y[n], theta));
+}
+</code></pre>
+
+<ul>
+<li>Instead of using bernoulli_log() function in Stan, you can explicitely specify the log likelihood as:</li>
+</ul>
+
+<pre><code class="r">...
+model {
+  for (n in 1:N) 
+    increment_log_prob(log(if_else(y[n] == 1, theta, 1-theta)));
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-51" style="background:;">
+  <hgroup>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Finally, you can use vectorized operations so you can get rid of loops:</li>
+</ul>
+
+<pre><code class="r">...
+model {
+  increment_log_prob(bernoulli_log(Y, theta));
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-52" style="background:;">
+  <hgroup>
+    <h2>Exercise2 - Zero-Inflated Poisson</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>source: User&#39;s Manual - Page 108</p></li>
+<li><p>Consider a zero-inflated poisson distribution where:</p>
+
+<ul>
+<li>with probability \(\theta\), we draw a zero</li>
+<li>with probability \(1 - \theta\), we draw from \(Poisson(\lambda)\)</li>
+<li>this means:
+\[p(y_n | \theta, \lambda) = \begin{cases}
+\theta + (1 - \theta) \times Poisson(0|\lambda) & \text{if }y_n = 0\\
+(1 - \theta) \times Poisson(y_n|\lambda) & \text{if }y_n \ne 0\\
+\end{cases}\]</li>
+<li>How to implement this in stan?</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-53" style="background:;">
+  <hgroup>
+    <h2>Exercise2 - Zero-Inflated Poisson (Solution)</h2>
   </hgroup>
   <article data-timings="">
     
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-54" style="background:;">
+  <hgroup>
+    <h2>Exercise3: Simple Linear Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Consider a model of the form:
+\[y_i = \alpha + \beta x_i + \epsilon_i\]</p></li>
+<li><p>step 1) simulate some data for the model above</p></li>
+<li><p>step 2) fit a linear regression in R (frequentist model)</p></li>
+<li><p>step 3) fit a Bayesian linear regression using Stan</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-55" style="background:;">
+  <hgroup>
+    <h2>Exercise4: Finite Mixtures</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Suppose Y belongs to a finite mixture of distributions.</p></li>
+<li><p>This means eahc outcome \(Y_i\) is drawn from one those distributions</p></li>
+<li><p>In paticular, suppose Y belongs to a mixture of K normal distributions. </p></li>
+<li><p>Consider \(\theta\) as a K-simplex. </p></li>
+<li><p>Per each \(Y_i\), there is a corresponding latent variable \(z_i \in \{ 1, 2, \dots, K\}\)</p></li>
+<li><p>We can then write:
+\[Z_i \sim Categorical(\theta)\]
+\[y_i \sim Normal(\mu_{z_i}, \sigma)\]</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-56" style="background:;">
+  <hgroup>
+    <h2>Exercise4: Finite Mixtures</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>By summing over the latent \(Z_i\)&#39;s, we get:
+\[P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma)\]</p></li>
+<li><p>Consider a mixutre of two Normal distributions: N(-2.5, 1), N(2.5, 1)</p></li>
+<li><p>Consider mixing proportion as: \(\theta = (0.4, 0.6)\)</p></li>
+<li><p>For this problem:</p>
+
+<ul>
+<li>step1) simulate data</li>
+<li>step2) run a Bayesian model using stan</li>
+</ul></li>
+</ul>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -1247,110 +1454,164 @@ model {
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=30 title='User-Defined Functions:'>
+        data-slide=30 title='Operators:'>
          30
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=31 title='Reparameterization and Change of Variables:'>
+        data-slide=31 title='Built-In Functions:'>
          31
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=32 title='Reparameterization:'>
+        data-slide=32 title='User-Defined Functions:'>
          32
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=33 title='Reparameterization (1st Parameterization):'>
+        data-slide=33 title='Reparameterization and Change of Variables:'>
          33
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=34 title='Reparameterization (2nd Parameterization):'>
+        data-slide=34 title='Reparameterization:'>
          34
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=35 title='Change of Variables:'>
+        data-slide=35 title='Reparameterization (1st Parameterization):'>
          35
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=36 title='Change of Variables:'>
+        data-slide=36 title='Reparameterization (2nd Parameterization):'>
          36
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=37 title='The distinction between Reparam. vs. Change of Var?'>
+        data-slide=37 title='Change of Variables:'>
          37
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=38 title='The distinction between Reparam. vs. Change of Var?'>
+        data-slide=38 title='Change of Variables:'>
          38
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=39 title='Exercise - Transformation:'>
+        data-slide=39 title='The distinction between Reparam. vs. Change of Var?'>
          39
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=40 title='Exercise - Change of Variable:'>
+        data-slide=40 title='The distinction between Reparam. vs. Change of Var?'>
          40
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=41 title='Truncated Data:'>
+        data-slide=41 title='Exercise - Transformation:'>
          41
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=42 title='Truncated Data:'>
+        data-slide=42 title='Exercise - Change of Variable:'>
          42
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=43 title='Censored Data:'>
+        data-slide=43 title='Truncated Data:'>
          43
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=44 title='Censored Data:'>
+        data-slide=44 title='Truncated Data:'>
          44
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=45 title='Censored Data - Likelihood Approach:'>
+        data-slide=45 title='Censored Data:'>
          45
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=46 title='Censored Data - Likelihood Approach:'>
+        data-slide=46 title='Censored Data:'>
          46
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=47 title='Examples:'>
+        data-slide=47 title='Censored Data - Likelihood Approach:'>
          47
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=48 title='Censored Data - Likelihood Approach:'>
+         48
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=49 title='Exercise1 - Revisiting the Coin Flip example:'>
+         49
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=50 title='Exercise1 - Revisiting the Coin Flip example:'>
+         50
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=51 title='Exercise1 - Revisiting the Coin Flip example:'>
+         51
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=52 title='Exercise2 - Zero-Inflated Poisson'>
+         52
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=53 title='Exercise2 - Zero-Inflated Poisson (Solution)'>
+         53
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=54 title='Exercise3: Simple Linear Regression'>
+         54
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=55 title='Exercise4: Finite Mixtures'>
+         55
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=56 title='Exercise4: Finite Mixtures'>
+         56
       </a>
     </li>
   </ul>
