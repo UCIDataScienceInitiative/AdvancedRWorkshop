@@ -1109,7 +1109,7 @@ model {
 
 <slide class="" id="slide-49" style="background:;">
   <hgroup>
-    <h2>Example 1 - Revisiting the Coin Flip example:</h2>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
   </hgroup>
   <article data-timings="">
     <h3>Borrowed from Daniel Lee (@djsyclik)</h3>
@@ -1132,7 +1132,7 @@ model {
 
 <slide class="" id="slide-50" style="background:;">
   <hgroup>
-    <h2>Example 1 - Revisiting the Coin Flip example:</h2>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
   </hgroup>
   <article data-timings="">
     <ul>
@@ -1163,7 +1163,7 @@ model {
 
 <slide class="" id="slide-51" style="background:;">
   <hgroup>
-    <h2>Example 1 - Revisiting the Coin Flip example:</h2>
+    <h2>Exercise1 - Revisiting the Coin Flip example:</h2>
   </hgroup>
   <article data-timings="">
     <ul>
@@ -1182,7 +1182,7 @@ model {
 
 <slide class="" id="slide-52" style="background:;">
   <hgroup>
-    <h2>Exercise - Zero-Inflated Poisson</h2>
+    <h2>Exercise2 - Zero-Inflated Poisson</h2>
   </hgroup>
   <article data-timings="">
     <ul>
@@ -1207,7 +1207,7 @@ model {
 
 <slide class="" id="slide-53" style="background:;">
   <hgroup>
-    <h2>Exercise - Zero-Inflated Poisson (Solution)</h2>
+    <h2>Exercise2 - Zero-Inflated Poisson (Solution)</h2>
   </hgroup>
   <article data-timings="">
     
@@ -1217,10 +1217,59 @@ model {
 
 <slide class="" id="slide-54" style="background:;">
   <hgroup>
-    <h2>The rest of the class will be on group exercises!</h2>
+    <h2>Exercise3: Simple Linear Regression</h2>
   </hgroup>
   <article data-timings="">
-    
+    <ul>
+<li><p>Consider a model of the form:
+\[y_i = \alpha + \beta x_i + \epsilon_i\]</p></li>
+<li><p>step 1) simulate some data for the model above</p></li>
+<li><p>step 2) fit a linear regression in R (frequentist model)</p></li>
+<li><p>step 3) fit a Bayesian linear regression using Stan</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-55" style="background:;">
+  <hgroup>
+    <h2>Exercise4: Finite Mixtures</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Suppose Y belongs to a finite mixture of distributions.</p></li>
+<li><p>This means eahc outcome \(Y_i\) is drawn from one those distributions</p></li>
+<li><p>In paticular, suppose Y belongs to a mixture of K normal distributions. </p></li>
+<li><p>Consider \(\theta\) as a K-simplex. </p></li>
+<li><p>Per each \(Y_i\), there is a corresponding latent variable \(z_i \in \{ 1, 2, \dots, K\}\)</p></li>
+<li><p>We can then write:
+\[Z_i \sim Categorical(\theta)\]
+\[y_i \sim Normal(\mu_{z_i}, \sigma_{z_i})\]</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-56" style="background:;">
+  <hgroup>
+    <h2>Exercise4: Finite Mixtures</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>By summing over the latent \(Z_i\)&#39;s, we get:
+\[P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma_k)\]</p></li>
+<li><p>Consider a mixutre of two Normal distributions: N(-1, 2), N(3, 1)</p></li>
+<li><p>Consider mixing proportion as: \(\theta = (0.3, 0.7)\)</p></li>
+<li><p>For this problem:</p>
+
+<ul>
+<li>step1) simulate data</li>
+<li>step2) run a Bayesian model using stan</li>
+</ul></li>
+</ul>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -1519,38 +1568,50 @@ model {
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=49 title='Example 1 - Revisiting the Coin Flip example:'>
+        data-slide=49 title='Exercise1 - Revisiting the Coin Flip example:'>
          49
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=50 title='Example 1 - Revisiting the Coin Flip example:'>
+        data-slide=50 title='Exercise1 - Revisiting the Coin Flip example:'>
          50
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=51 title='Example 1 - Revisiting the Coin Flip example:'>
+        data-slide=51 title='Exercise1 - Revisiting the Coin Flip example:'>
          51
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=52 title='Exercise - Zero-Inflated Poisson'>
+        data-slide=52 title='Exercise2 - Zero-Inflated Poisson'>
          52
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=53 title='Exercise - Zero-Inflated Poisson (Solution)'>
+        data-slide=53 title='Exercise2 - Zero-Inflated Poisson (Solution)'>
          53
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=54 title='The rest of the class will be on group exercises!'>
+        data-slide=54 title='Exercise3: Simple Linear Regression'>
          54
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=55 title='Exercise4: Finite Mixtures'>
+         55
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=56 title='Exercise4: Finite Mixtures'>
+         56
       </a>
     </li>
   </ul>

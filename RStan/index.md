@@ -805,7 +805,7 @@ model {
 
 ---
 
-## Example 1 - Revisiting the Coin Flip example:
+## Exercise1 - Revisiting the Coin Flip example:
 
 ### Borrowed from Daniel Lee (@djsyclik)
 
@@ -826,7 +826,7 @@ model {
 
 ---
 
-## Example 1 - Revisiting the Coin Flip example:
+## Exercise1 - Revisiting the Coin Flip example:
 
 + Alternatively, we can specify the model using the log likelihood approach:
 
@@ -852,7 +852,7 @@ model {
 
 ---
 
-## Example 1 - Revisiting the Coin Flip example:
+## Exercise1 - Revisiting the Coin Flip example:
 
   + Finally, you can use vectorized operations so you can get rid of loops:
 
@@ -865,7 +865,7 @@ model {
 
 ---
 
-## Exercise - Zero-Inflated Poisson
+## Exercise2 - Zero-Inflated Poisson
   + source: User's Manual - Page 108
   
   + Consider a zero-inflated poisson distribution where:
@@ -882,9 +882,56 @@ model {
 
 ---
 
-## Exercise - Zero-Inflated Poisson (Solution)    
+## Exercise2 - Zero-Inflated Poisson (Solution)    
 
 
 ---
 
-## The rest of the class will be on group exercises!
+## Exercise3: Simple Linear Regression
+
++ Consider a model of the form:
+$$y_i = \alpha + \beta x_i + \epsilon_i$$
+
++ step 1) simulate some data for the model above
+
++ step 2) fit a linear regression in R (frequentist model)
+
++ step 3) fit a Bayesian linear regression using Stan
+
+---
+
+## Exercise4: Finite Mixtures
+
++ Suppose Y belongs to a finite mixture of distributions.
+
++ This means eahc outcome $Y_i$ is drawn from one those distributions
+
++ In paticular, suppose Y belongs to a mixture of K normal distributions. 
+
++ Consider $\theta$ as a K-simplex. 
+
++ Per each $Y_i$, there is a corresponding latent variable $z_i \in \{ 1, 2, \dots, K\}$
+
++ We can then write:
+$$Z_i \sim Categorical(\theta)$$
+$$y_i \sim Normal(\mu_{z_i}, \sigma_{z_i})$$
+
+
+---
+
+## Exercise4: Finite Mixtures
+
++ By summing over the latent $Z_i$'s, we get:
+$$P_Y(y | \theta, \mu, \sigma) = \sum_{k = 1}^{K} \theta_k Normal(\mu_k, \sigma_k)$$
+
++ Consider a mixutre of two Normal distributions: N(-1, 2), N(3, 1)
+
++ Consider mixing proportion as: $\theta = (0.3, 0.7)$
+
++ For this problem:
+    + step1) simulate data
+
+    + step2) run a Bayesian model using stan
+
+
+
