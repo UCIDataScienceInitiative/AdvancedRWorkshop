@@ -377,7 +377,13 @@ generated quantities{
   + 2.2) row_vector (of real values)
   + 2.3) matrix (of real values)
   + 2.4) constrained include: simplex, unit_vector, ordered, positive_ordered, corr_matrix, cov_matrix, cholesky_factor_cov, cholesky_factor_cor
-  
+
+
+
+--- 
+
+## Data Types and Variable Declarations:
+
 + 3) Arrays:
   + 3.1) three-dimensional arrays of integers
   + 3.2) four-dimensional arrays of row_vectors
@@ -488,6 +494,40 @@ else
 
 ---
 
+### Print:
+
++ Stan does not have a stepwise debugger
+
++ Instead, we can use the traditional debug-by-printt method !
+
++ For instance, to print the value of variables y and z, use:
+
+```r
+print("y=", y, " z=", z);
+```
+
++ Print statements may be used anywhere other statements may be used
+
++ frequency depends on how often the block they are in is evaluated
+
+---
+
+### Print:
+
+
+```r
+transformed data {
+  matrix[2,2] u;
+  u[1,1] <- 1.0;  u[1,2] <- 4.0;
+  u[2,1] <- 9.0;  u[2,2] <- 16.0;
+  for (n in 1:2)
+    print("u[", n, "] = ", u[n]);
+}
+```
+
+
+---
+
 ## Operators:
 
 + Logical Operators:
@@ -576,8 +616,7 @@ void myFunc(real arg1, real arg2){
 
 ```r
 data {
-  int<lower = 0> N;
-  vector[N] y;
+  vector<lower = 0, upper = 1>[N] theta;
 }
 parameters {
   real<lower = 0> alpha;
@@ -587,7 +626,7 @@ parameters {
 model {
   alpha ~ ... ; // our prior for alpha
   beta ~ ... ; // our prior for beta
-  y ~ beta(alpha, beta); 
+  theta ~ beta(alpha, beta); 
 }
 ```
   
@@ -625,7 +664,7 @@ model {
 
 $$log(\theta) \sim N(\mu, \sigma)$$
 
-+ Then we know Y is distributed as:
++ Then we know $\theta$ is distributed as:
 $$P(\theta) = N(log(\theta) | \mu, \sigma) \times |\frac{d}{d\theta} log(\theta)|$$
 $$P(\theta) = N(log(\theta) | \mu, \sigma) 1/\theta$$
 
@@ -662,30 +701,6 @@ model{
 + Change of Var: We first transform a variable, and then we sample it!
 
 + only the latter needs Jacobian!
-
-
----
-
-### The distinction between Reparam. vs. Change of Var?
-
-
-## Exercise: Gamma vs. Inverse Gamma using both Reparameterization and Change of variables
-
-## Reminder: A variable has inverse-gamma distribution if it's inverse has gamma distribution
-
----
-
-### Exercise - Transformation:
-
-
-
-
----
-
-### Exercise - Change of Variable:
-
-
-
 
 ---
 

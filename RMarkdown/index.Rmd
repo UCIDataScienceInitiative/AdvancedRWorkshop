@@ -100,20 +100,6 @@ library(rmarkdown)
 
 ---
 
-## Interactive Documents:
-
-+ With R Markdown, you can even report an interactive shiny document.
-
-+ To do so:
-  + 1) keep output as html_output (or ioslides_presentation)
-  + 2) add shiny run time to YAML: runtime: shiny
-  + 3) Need Shiny input functions and Shiny render functions
-
-+ More info: http://rmarkdown.rstudio.com/authoring_shiny.html
-
-
----
-
 ## Embeding Equations:
 
   + One "dollar" sign for inline equation
@@ -123,4 +109,4 @@ library(rmarkdown)
 
 ---
 
-## Let's have an example in RMarkdown:
+## Let's create some Markdown documents !
