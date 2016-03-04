@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>tidyr, dplyr, and magrittr</title>
+  <meta charset="utf-8">
+  <meta name="description" content="tidyr, dplyr, and magrittr">
+  <meta name="author" content="Sepehr Akhavan">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/logo.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/logo.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>tidyr, dplyr, and magrittr</h1>
+    <h2>UCI Data Science Initiative</h2>
+    <p>Sepehr Akhavan<br/>Dept. of Statistics</p>
+  </hgroup>
+    <a href="https://github.com/UCIDataScienceInitiative/AdvancedRWorkshop/zipball/gh-pages" class="example">
+     Download
+    </a>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Motivation:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>There are usually 4 main steps in turning raw data into knowledge: </p>
+
+<ol>
+<li><p>Data manipulation (80% of any data analysis project (Dasu et al 2003)) </p></li>
+<li><p>Data visualization </p></li>
+<li><p>Statistical analysis/modeling </p></li>
+<li><p>Deployment of results</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>How make data manipulation easy in R?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>tidyr (pre-processing data)</li>
+<li>dplyr (easy to transform data)</li>
+<li>magrittr: makes working with tidyr and dplyr easier!</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>tidyr:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>a package to tidy your data (data that is easy to work with)</p></li>
+<li><p>tidy data is a data that is easy to work with:</p></li>
+</ol>
+
+<p>2.1) easy to transform (dplyr)</p>
+
+<p>2.2) easy to visualize (ggplot2 and ggvis)</p>
+
+<p>2.3) and easy to model</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Property of tidy data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>Each column is a variable</p></li>
+<li><p>Each row is an observation</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>How to tidy messy data?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>First: Identify variables in your data</p></li>
+<li><p>Then: use tidyr tools to move variables into columns</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>tidyr&#39;s main functions:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>gather()</p></li>
+<li><p>separate()</p></li>
+<li><p>spread()</p></li>
+<li><p>unite()</p></li>
+</ol>
+
+<p>Note: </p>
+
+<ol>
+<li><p>tidyr is only for tidying data. </p></li>
+<li><p>Therefore, includes to-the-point and easy-to-learn functions</p></li>
+<li><p>Need more fancy methods? checkout reshape and reshape2</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Let&#39;s learn tidyr functions by examples!</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>I borrowed some cool examples from Garret Grolemund</li>
+</ul>
+
+<pre><code class="r">devtools::install_github(&quot;garrettgman/DSR&quot;)
+library(DSR)
+</code></pre>
+
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Tuberculosis data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>We consider data on Tuberculosis documented by he World Health Organization in Afghanistan, Brazil, and China between 1999 and 2000. </p></li>
+<li><p>You can access the data from DSR package</p></li>
+</ul>
+
+<pre><code class="r">table1
+table2 # also try other tables till 6 
+</code></pre>
+
+<ul>
+<li><p>all of the tables above inclde the same info</p></li>
+<li><p>Which one is easier to work with? </p></li>
+<li><p>example: calculate the rate of TB cases per country per year? </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>spread():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>spread(...): turns a pair of key:value columns into a set of tidy columns.</p></li>
+<li><p>spread(DF, Key, Val)</p></li>
+<li><p>try:</p></li>
+</ul>
+
+<pre><code class="r">spread(table2, key, value)
+</code></pre>
+
+<ul>
+<li>Can you explain what spread does?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>spread():</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">str(spread)
+</code></pre>
+
+<pre><code>## function (data, key, value, fill = NA, convert = FALSE, drop = TRUE)
+</code></pre>
+
+<ul>
+<li><p>fill: what to place for combinations of variables that do not exist?</p></li>
+<li><p>convert: If a value column contains multiple types of data, should they be converted in the new data.frame?</p></li>
+<li><p>drop: If key column is factor, drop = FALSE, spread will keep factor levels that do not appear in the key column.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>gather():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>gather(): is the opposite of spread()</p></li>
+<li><p>gather() put column names into a key column and values into val column.</p></li>
+<li><p>gather(DF, name_of_Key_Col, name_of_Val_Col, list_of_columns_to_collapse)</p></li>
+<li><p>example:</p></li>
+</ul>
+
+<pre><code class="r">table4
+gather(table4, &quot;year&quot;, &quot;cases&quot;, 2:3)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>separate():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>separate(): splits values of a column into two columns</p></li>
+<li><p>separate(DF, column, into = c(&quot;col1&quot;, &quot;col2&quot;))</p></li>
+<li><p>example1:</p></li>
+</ul>
+
+<pre><code class="r">table3
+separate(table3, rate, into = c(&quot;cases&quot;, &quot;population&quot;))
+</code></pre>
+
+<ul>
+<li>example2:</li>
+</ul>
+
+<pre><code class="r">separate(table3, year, into = c(&quot;century&quot;, &quot;year&quot;), sep = 2)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>unite():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>unite(): is the opposite of separate()</p></li>
+<li><p>combines multiple columns into one column</p></li>
+<li><p>by default, sep argument is &quot;_&quot;</p></li>
+<li><p>example:</p></li>
+</ul>
+
+<pre><code class="r">table6
+unite(table6, &quot;new&quot;, century, year, sep = &quot;&quot;) # note: columns no double quotation
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>dplyr:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>dplyr package helps with common data manipulation tasks.</p></li>
+<li><p>dplyr provides simple &quot;verbs&quot; (functions) for data manipulation tasks.</p></li>
+<li><p>Uses efficient data storage backends</p></li>
+<li><p>Also works nicely with data bases (dplyr on SQL databases is as easy as data.frame)</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>dplyr:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In this tutorial we will learn about the most common dplyr functions:</p>
+
+<ol>
+<li><p>filter(): provides basic filtering capabilities</p></li>
+<li><p>arrange(): ordering data</p></li>
+<li><p>select(): selecting variables</p></li>
+<li><p>mutate(): create new variables</p></li>
+<li><p>summarise(): summarise data by functions of choice</p></li>
+<li><p>group_by()</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>dplyr verbs:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>First argment: data.frame</p></li>
+<li><p>subsequent arguments: what to do with the DF</p></li>
+<li><p>They always return a data.frame</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>NYC Flight Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>In this tutorial we work with &quot;nycflights13&quot; data frame (borrowed from dplyr vignettes).</p></li>
+<li><p>The dataset contains all 336,776 flights that departed from New York City in 2013.</p></li>
+</ul>
+
+<pre><code class="r">library(nycflights13)
+dim(flights)
+</code></pre>
+
+<pre><code>## [1] 336776     16
+</code></pre>
+
+<pre><code class="r">class(flights)
+</code></pre>
+
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>NYC Flight Data:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    336776 obs. of  16 variables:
+##  $ year     : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
+##  $ month    : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ day      : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ dep_time : int  517 533 542 544 554 554 555 557 557 558 ...
+##  $ dep_delay: num  2 4 2 -1 -6 -4 -5 -3 -3 -2 ...
+##  $ arr_time : int  830 850 923 1004 812 740 913 709 838 753 ...
+##  $ arr_delay: num  11 20 33 -18 -25 12 19 -14 -8 8 ...
+##  $ carrier  : chr  &quot;UA&quot; &quot;UA&quot; &quot;AA&quot; &quot;B6&quot; ...
+##  $ tailnum  : chr  &quot;N14228&quot; &quot;N24211&quot; &quot;N619AA&quot; &quot;N804JB&quot; ...
+##  $ flight   : int  1545 1714 1141 725 461 1696 507 5708 79 301 ...
+##  $ origin   : chr  &quot;EWR&quot; &quot;LGA&quot; &quot;JFK&quot; &quot;JFK&quot; ...
+##  $ dest     : chr  &quot;IAH&quot; &quot;IAH&quot; &quot;MIA&quot; &quot;BQN&quot; ...
+##  $ air_time : num  227 227 160 183 116 150 158 53 140 138 ...
+##  $ distance : num  1400 1416 1089 1576 762 ...
+##  $ hour     : num  5 5 5 5 5 5 5 5 5 5 ...
+##  $ minute   : num  17 33 42 44 54 54 55 57 57 58 ...
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>filter():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>filter(): selects a subset of the data</p></li>
+<li><p>filter(DF, condition(s))</p></li>
+</ul>
+
+<pre><code class="r">library(dplyr)
+filter(flights, month == 1, day == 1) # jan 1st flights
+</code></pre>
+
+<pre><code>## Source: local data frame [842 x 16]
+## 
+##     year month   day dep_time dep_delay arr_time arr_delay carrier tailnum
+##    (int) (int) (int)    (int)     (dbl)    (int)     (dbl)   (chr)   (chr)
+## 1   2013     1     1      517         2      830        11      UA  N14228
+## 2   2013     1     1      533         4      850        20      UA  N24211
+## 3   2013     1     1      542         2      923        33      AA  N619AA
+## 4   2013     1     1      544        -1     1004       -18      B6  N804JB
+## 5   2013     1     1      554        -6      812       -25      DL  N668DN
+## 6   2013     1     1      554        -4      740        12      UA  N39463
+## 7   2013     1     1      555        -5      913        19      B6  N516JB
+## 8   2013     1     1      557        -3      709       -14      EV  N829AS
+## 9   2013     1     1      557        -3      838        -8      B6  N593JB
+## 10  2013     1     1      558        -2      753         8      AA  N3ALAA
+## ..   ...   ...   ...      ...       ...      ...       ...     ...     ...
+## Variables not shown: flight (int), origin (chr), dest (chr), air_time
+##   (dbl), distance (dbl), hour (dbl), minute (dbl)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>arrange():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>arrange(): reorders rows</p></li>
+<li><p>arrange(DF, columnNamesToOrder)</p></li>
+</ul>
+
+<pre><code class="r">arrange(flights, year, month, day)
+</code></pre>
+
+<pre><code class="r">arrange(flights, desc(arr_delay)) # desc ordering!
+</code></pre>
+
+<ul>
+<li>Exercise: order flight data descendingly by the difference of dep_delay and arr_dely?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>select():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>to select column(s) from a data.frame</p></li>
+<li><p>example:</p></li>
+</ul>
+
+<pre><code class="r">select(flights, year, month, day)
+
+select(flights, year:day)
+
+select(flights, -(year:day))
+</code></pre>
+
+<ul>
+<li>Please read the help and provide three ways to select delay variables</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>select():</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">select(flights, arr_delay, dep_delay)
+select(flights, ends_with(&quot;delay&quot;))
+select(flights, contains(&quot;delay&quot;))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>mutate():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>mutate: to add columns that are functions of existing columns</li>
+</ul>
+
+<pre><code class="r">mutate(flights, gain = arr_delay - dep_delay, speed = distance / air_time * 60)
+</code></pre>
+
+<pre><code>## Source: local data frame [336,776 x 18]
+## 
+##     year month   day dep_time dep_delay arr_time arr_delay carrier tailnum
+##    (int) (int) (int)    (int)     (dbl)    (int)     (dbl)   (chr)   (chr)
+## 1   2013     1     1      517         2      830        11      UA  N14228
+## 2   2013     1     1      533         4      850        20      UA  N24211
+## 3   2013     1     1      542         2      923        33      AA  N619AA
+## 4   2013     1     1      544        -1     1004       -18      B6  N804JB
+## 5   2013     1     1      554        -6      812       -25      DL  N668DN
+## 6   2013     1     1      554        -4      740        12      UA  N39463
+## 7   2013     1     1      555        -5      913        19      B6  N516JB
+## 8   2013     1     1      557        -3      709       -14      EV  N829AS
+## 9   2013     1     1      557        -3      838        -8      B6  N593JB
+## 10  2013     1     1      558        -2      753         8      AA  N3ALAA
+## ..   ...   ...   ...      ...       ...      ...       ...     ...     ...
+## Variables not shown: flight (int), origin (chr), dest (chr), air_time
+##   (dbl), distance (dbl), hour (dbl), minute (dbl), gain (dbl), speed (dbl)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>mutate():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>mutate allows you to refer to columns that you’ve just created:</li>
+</ul>
+
+<pre><code class="r">mutate(flights, gain = arr_delay - dep_delay, gain_per_hour = gain / (air_time / 60))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>summarise():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>It collapses a data frame to a single row!</li>
+</ul>
+
+<pre><code class="r">summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+</code></pre>
+
+<pre><code>## Source: local data frame [1 x 1]
+## 
+##      delay
+##      (dbl)
+## 1 12.63907
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-26" style="background:;">
+  <hgroup>
+    <h2>summarise():</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>It makes more sense to apply summarise() to groups of obs in the data</p></li>
+<li><p>group_by(): breaks down a dataset into specified groups of rows</p></li>
+</ul>
+
+<pre><code class="r">by_dest &lt;- group_by(flights, dest)
+summarise(by_dest, delay = mean(dep_delay, na.rm = TRUE))
+</code></pre>
+
+<pre><code>## Source: local data frame [105 x 2]
+## 
+##     dest     delay
+##    (chr)     (dbl)
+## 1    ABQ 13.740157
+## 2    ACK  6.456604
+## 3    ALB 23.620525
+## 4    ANC 12.875000
+## 5    ATL 12.509824
+## 6    AUS 13.025641
+## 7    AVL  8.190114
+## 8    BDL 17.720874
+## 9    BGR 19.475000
+## 10   BHM 29.694853
+## ..   ...       ...
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-27" style="background:;">
+  <hgroup>
+    <h2>Useful Summary Functions:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>min(x), median(x), max(x), quantile(x, p)</p></li>
+<li><p>n(), n_distinct(), sum(x), mean(x)</p></li>
+<li><p>sum(x &gt; 10), mean(x &gt; 10)</p></li>
+<li><p>sd(x), var(x), IQR(x), mad(x)</p></li>
+</ul>
+
+<p>Exercise: Group flights by destination and provide summary data for arr_delay.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-28" style="background:;">
+  <hgroup>
+    <h2>Useful Summary Functions:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">flights_by_dest &lt;- group_by(flights, dest)
+delays &lt;- summarise(flights_by_dest, mean = mean(arr_delay),
+                    n = n())
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>Who can read this code?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">hourly_delay &lt;- filter(
+  summarise(
+    group_by(
+      filter(
+        flights,
+        !is.na(dep_delay)
+      ),
+      date, hour 
+    ),
+    delay = mean(dep_delay),
+    n = n() 
+  ),
+  n &gt; 10 
+)
+</code></pre>
+
+<ul>
+<li><p>difficult to read</p></li>
+<li><p>difficult to change!</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Who can read this code?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>solution: pipe operator from magrittr</p></li>
+<li><p>x %&gt;% f(y) --&gt; f(x, y)</p></li>
+<li><p>you can pronounce %&gt;% as then</p></li>
+<li><p>Let&#39;s re-write the code above:</p></li>
+</ul>
+
+<pre><code class="r">hourly_delay &lt;- flights %&gt;%
+  filter(!is.na(dep_delay)) %&gt;%
+  group_by(date, hour) %&gt;%
+  summarise(delay = mean(dep_delay), n = n()) %&gt;%
+  filter(n &gt; 10)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Let&#39;s try data pipelines :)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Exercise 1: Which destinations have the highest average delays?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>Let&#39;s try data pipelines :)</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">flights %&gt;%
+  group_by(dest) %&gt;%
+  summarise(
+    arr_delay = mean(arr_delay, na.rm = TRUE),
+    n = n()) %&gt;%
+  arrange(desc(arr_delay))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h2>Exercise:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>1) group data by individual plane (tailnum)</p>
+
+<p>2) then count number of flights, average distance, average arrival delay per plane</p>
+
+<p>3) then filter planes with at least 20 flights and at most a flight distance of 2000</p>
+
+<p>4) use ggplot2 to explore the relation between the average arriaval delay and distance</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    <h2>Exercise:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">delayData &lt;- flights %&gt;% group_by(tailnum) %&gt;% 
+  summarise(count = n(),
+            dist = mean(distance, na.rm = T),
+            delay = mean(arr_delay, na.rm = T)) %&gt;% 
+  filter(count &gt; 20, dist &lt; 2000)
+
+ggplot(delayData, aes(dist, delay)) + 
+  geom_point(aes(size = count), alpha = 1/2) + 
+  geom_smooth() + scale_size_area()
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Motivation:'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='How make data manipulation easy in R?'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='tidyr:'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Property of tidy data:'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='How to tidy messy data?'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='tidyr&#39;s main functions:'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Let&#39;s learn tidyr functions by examples!'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Tuberculosis data'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='spread():'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='spread():'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='gather():'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='separate():'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='unite():'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='dplyr:'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='dplyr:'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='dplyr verbs:'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='NYC Flight Data:'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='NYC Flight Data:'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='filter():'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='arrange():'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='select():'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='select():'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='mutate():'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='mutate():'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='summarise():'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='summarise():'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='Useful Summary Functions:'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='Useful Summary Functions:'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='Who can read this code?'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Who can read this code?'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Let&#39;s try data pipelines :)'>
+         31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Let&#39;s try data pipelines :)'>
+         32
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=33 title='Exercise:'>
+         33
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=34 title='Exercise:'>
+         34
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
