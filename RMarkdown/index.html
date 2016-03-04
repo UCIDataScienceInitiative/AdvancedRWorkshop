@@ -50,10 +50,203 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Introduction</h2>
+    <h2>What is RMarkdown?</h2>
   </hgroup>
   <article data-timings="">
-    
+    <p><img src="images/WhatIsRMarkdown.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>What is Markdown?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>A very simple way to write HTML!</p></li>
+<li><p>As simple as writing english text!</p></li>
+<li><p>You simply type in text, your text is rendered to a more complex formats</p></li>
+<li><p>Very helpful to focus on content and not that much on formatting</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>How does Markdown look like?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Demo - R Markdown</p></li>
+<li><p>RStudio Help - Markdown Quick Reference</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Qucik Markdown Guide - Header:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Pictures borrowed from Garrett Grolemund (RStudio)</li>
+</ul>
+
+<p><img src="images/Header.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Texts:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Pictures borrowed from Garrett Grolemund (RStudio)</li>
+</ul>
+
+<p><img src="images/Text.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Lists:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Pictures borrowed from Garrett Grolemund (RStudio)</li>
+</ul>
+
+<p><img src="images/Lists.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Hyperlinks:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Pictures borrowed from Garrett Grolemund (RStudio)</li>
+</ul>
+
+<p><img src="images/Hyperlinks.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Equations:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Pictures borrowed from Garrett Grolemund (RStudio)</li>
+</ul>
+
+<p><img src="images/Equations.png" alt="alt text"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Where to Learn more on Markdown:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>RStudio/Help/Markdown Quick Reference</p></li>
+<li><p>R Markdown Reference Guide: <a href="https://www.rstudio.com/resources/cheatsheets/">https://www.rstudio.com/resources/cheatsheets/</a></p></li>
+<li><p>Comprehensive RMarkdown Reference (RMarkdown Developing Center): <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>How to Embed R Code inside of a Markdown document:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>This is where <em>Markdown</em> changes to <strong>R</strong>Markdown</p></li>
+<li><p>R codes can be embeded in two ways:</p>
+
+<ol>
+<li>As an R chunk</li>
+<li>As an inline code</li>
+</ol></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Some Useful Chunk Options:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>echo</li>
+<li>eval</li>
+<li>message, warning, error</li>
+<li>fig.height, fig.width, fig.keep</li>
+<li>result</li>
+<li>engine</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Key Points to remember:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>When we run our R Markdown document, it&#39;s considered as a fresh R session!</strong></p>
+
+<ol>
+<li>Variables not explicitely defined in the RMarkdown document, are not known!</li>
+<li>Required Packages need to be explicitely loaded in the RMarkdown docuemnt!</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Demos:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Different Markdown outputs (HTML, PDF, MS Word)</li>
+<li>Different Presentation Outputs (HTML, PDF)</li>
+<li>Interactive visualization inside of RMarkdown (HTML Only)</li>
+<li>Shiny interactive applications inside RMarkdown</li>
+<li>Template (rticles package)</li>
+<li>YAML an output template</li>
+<li>rmarkdown::render</li>
+</ol>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -64,8 +257,80 @@
     <ul>
       <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=1 title='Introduction'>
+        data-slide=1 title='What is RMarkdown?'>
          1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='What is Markdown?'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='How does Markdown look like?'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Qucik Markdown Guide - Header:'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Texts:'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Lists:'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Hyperlinks:'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Equations:'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Where to Learn more on Markdown:'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='How to Embed R Code inside of a Markdown document:'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Some Useful Chunk Options:'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Key Points to remember:'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Demos:'>
+         13
       </a>
     </li>
   </ul>
