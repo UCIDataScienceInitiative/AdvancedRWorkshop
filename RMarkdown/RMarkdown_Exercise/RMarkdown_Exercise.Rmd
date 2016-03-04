@@ -1,0 +1,25 @@
+---
+title: "RMarkdown Exercise"
+author: "UCI DataScience Initiative"
+date: "March 04, 2016"
+output: html_document
+---
+
+# Data Exploration
+
+## Data Exploration using mtcars dataset:
+1) mtcars dataset is available in R base package. Using str, summarize thi object:
+
+
+2) What are the dimesions? Explain in words whre dimensions are inline R codes!
+
+
+3) Take a subset of the data with these attributes:
+  * "mpg", "cyl", "hp", "wt", "am", "gear"
+
+
+4) Provide some useful descriptive statistics from the data:
+
+
+5) Create a histogram of horse-power:
+

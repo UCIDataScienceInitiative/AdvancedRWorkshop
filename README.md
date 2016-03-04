@@ -1,7 +1,9 @@
 # Advanced R Workshop
 
-  + RShiny
-
-  + RStan
-
   + RMarkdown
+
+  + tidyr, dplyr, magrittr
+
+  + Debugging in R
+  
+  + Shiny and interactive plotting

@@ -1,0 +1,66 @@
+---
+title: "RMarkdown Exercise"
+author: "UCI DataScience Initiative"
+date: "March 04, 2016"
+output: html_document
+---
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, warning=FALSE}
+library(knitr)
+```
+
+
+# Data Exploration
+
+## Data Exploration using mtcars dataset:
+1) mtcars dataset is available in R base package. Using str, summarize thi object:
+
+```{r }
+str(mtcars) # or ?mtcars
+```
+
+2) What are the dimesions? Explain in words whre dimensions are inline R codes!
+
+```{r }
+# install.packages(repos = "http://cran.stat.ucla.edu", "car")
+dim(mtcars)
+colnames(mtcars) # names(mtcars)
+```
+
+3) Take a subset of the data with these attributes:
+  * "mpg", "cyl", "hp", "wt", "am", "gear"
+
+```{r}
+# we can take a subset of the data:
+mtcars_sub <- mtcars[,c("mpg", "cyl", "hp", "wt", "am", "gear")]
+```
+
+4) Provide some useful descriptive statistics from the data:
+
+```{r}
+# About the data:
+summary(mtcars_sub$mpg)
+summary(mtcars_sub)
+
+# for discrete attributes:
+table(mtcars_sub$gear)
+NumCyl <- table(mtcars_sub$cyl)
+NumCyl
+
+# two-way freq tables:
+table(mtcars_sub$am, mtcars_sub$gear) # am refers to the manual transmission
+
+freqTable <- table(mtcars_sub$am, mtcars_sub$gear)
+rownames(freqTable) <- c("Automatic", "Manual")
+colnames(freqTable) <- paste(3:5, "gears", sep = "-")
+freqTable
+kable(freqTable, caption = "Freq Table of Transmission vs. Number of Forward gears")
+```
+
+5) Create a histogram of horse-power:
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+# library(ggplot2) # http://www.cookbook-r.com/Graphs/
+# ggplot(mtcars_sub, aes(as.factor(cyl))) + geom_histogram(binwidth = 1)
+hist(mtcars_sub$hp, main = "hist of number of Horse Power")
+```
