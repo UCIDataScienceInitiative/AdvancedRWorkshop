@@ -1,0 +1,126 @@
+---
+title: "Interactive Plots with R Shiny"
+author: "Lingge Li"
+date: "March 4, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## An inspiring example
+
+http://shiny.rstudio.com/gallery/superzip-example.html
+
+What we are building today is not quite as fancy but shares the same kind of structure.
+
+http://54.201.252.124:3838/linggeli7/Interactive/
+
+## A static plot
+
+The following code will produce a static scatter plot. In this case, we want to overlay the points on top of a map with the maps library. The maps library uses ggplot to display geographical regions as polygons. There's also the [ggmap](https://journal.r-project.org/archive/2013-1/kahle-wickham.pdf) library that uses google maps.
+
+```{r eval=FALSE}
+library(shiny)
+library(ggplot2)
+library(maps)
+
+shinyServer(function(input, output) {
+  long <- runif(20, min=-122.7, max=-115)
+  lat <- runif(20, min=32.5, max=42)
+  mydata <- data.frame(long, lat, replicate(50, rnorm(20)))
+  
+  all_states <- map_data("state")
+  california <- all_states[which(all_states$region == "california"),]
+  
+  output$plot1 <- renderPlot({
+    p <- ggplot()
+    p <- p + geom_polygon( data=california, aes(x=long, y=lat, group = group),colour="white", fill="orange" ,alpha = 0.2)
+    p <- p + geom_point( data=mydata, aes(x=long, y=lat), size=3, color="red")  
+    p
+  })
+  
+})
+
+library(shiny)
+shinyUI(fluidPage(
+  plotOutput("plot1")
+))
+```
+
+## Mouse events
+In general, interaction happens through mouse events in three steps. First, we need to monitor mouse events. The mouse events are: click, double-click, hover, and brush. Then we will retrieve the values of the mouse events. Lastly, we will change the output accordingly. With R Shiny, it is very easy to keep track of the mouse events by including a few arguments in the UI. Their values are passed to the server in the input.
+```{r eval=FALSE}
+plotOutput("plot1", click = "plot_click",
+                  dblclick = "plot_dblclick",
+                  hover = "plot_hover",
+                  brush = brushOpts(
+                    id = "plot_brush",
+                    resetOnNew = TRUE)),
+fluidRow(
+    column(width = 3,
+           verbatimTextOutput("click_info")
+    )
+  )
+
+output$click_info <- renderPrint({
+    cat("input$plot_click:\n")
+    str(input$plot_click)
+  })
+```
+**Exercise 1** Can you print out hover, double-click and brush as well? What do you notice in the output?
+
+## Zoom with double-click and brush
+Now we will implement zoom with double-click and brush using [the reactive programming model](http://shiny.rstudio.com/articles/reactivity-overview.html).
+```{r eval=FALSE}
+ranges <- reactiveValues(x = NULL, y = NULL)
+
+observeEvent(input$plot_dblclick, {
+    brush <- input$plot_brush
+    if (!is.null(brush)) {
+      ranges$x <- c(brush$xmin, brush$xmax)
+      ranges$y <- c(brush$ymin, brush$ymax)
+      
+    } else {
+      ranges$x <- NULL
+      ranges$y <- NULL
+    }
+  })
+```
+**Exercise 2** How can you alter the plot to zoom? Hint: [coord_cartesian()](http://docs.ggplot2.org/current/coord_cartesian.html).
+
+## Click and show
+We can find the closest point in the dataset to where has been clicked with [nearPoints](http://shiny.rstudio.com/reference/shiny/latest/nearPoints.html).
+```{r eval=FALSE}
+values <- reactiveValues(point = NULL)
+
+observeEvent(input$plot_click, {
+    current <- nearPoints(mydata, input$plot_click, "long", "lat", threshold = 10, maxpoints = 1)
+    if (nrow(current) != 0) {
+      values$point <- current
+    } else {
+      values$point <- NULL
+    }
+  })
+
+```
+Now that we have the entire row of data associated with the point. Here I use the data to make a line plot. You can make a histogram, a table or whatever you like.
+```{r eval=FALSE}
+output$plot2 <- renderPlot({
+    if (is.null(values$point)) {
+    } else {
+      series <- data.frame(seq(50), t(values$point[3:52]))
+      rownames(series) <- NULL
+      colnames(series) <- c("time", "obs")
+      ggplot(series, aes(x=time, y=obs)) + geom_line() 
+    }
+  })
+
+plotOutput("plot2")
+```
+**Exercise 3** Do something creative with the data.
+
+## What's next
+
+Now you should have a good understanding of how interactive plots work. There are [several other things](http://shiny.rstudio.com/gallery/plot-interaction-advanced.html) you can do. You can also make plots look cooler with [HTML widgets](http://www.htmlwidgets.org/).
