@@ -1229,7 +1229,30 @@ model {
     <h2>Exercise2 - Zero-Inflated Poisson (Solution)</h2>
   </hgroup>
   <article data-timings="">
-    
+    <pre><code class="r">data {
+  int&lt;lower = 0&gt; N;
+  int&lt;lower = 0&gt; Y[N];
+}
+parameters {
+  real&lt;lower = 0, upper = 1&gt; theta;
+  real&lt;lower = 0&gt; lambda;
+}
+model {
+  theta ~ beta(1, 1);
+  lambda ~ cauchy(0, 5);
+
+  for (n in 1:N) {
+    if (Y[n] == 0)
+      increment_log_prob(log_sum_exp(bernoulli_log(1, theta),
+                                     bernoulli_log(0, theta)
+                                     + poisson_log(Y[n], lambda) ));
+    else
+      increment_log_prob(bernoulli_log(0, theta)
+                         + poisson_log(Y[n], lambda) );
+  }
+}
+</code></pre>
+
   </article>
   <!-- Presenter Notes -->
 </slide>

@@ -868,7 +868,7 @@ model {
 ---
 
 ## Exercise2 - Zero-Inflated Poisson (Solution)    
-```{r, eval=FALSE, echo=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 data {
   int<lower = 0> N;
   int<lower = 0> Y[N];
