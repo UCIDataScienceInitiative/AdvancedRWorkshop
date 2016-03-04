@@ -146,3 +146,11 @@ github:
 7. rmarkdown::render
 
 
+---
+
+
+## Your Turn!
+Please work on our RMarkdown exercise:
+
+(./Advanced R/AdvancedRWorkshop/RMarkdown/RMarkdown_Exercise)
+
