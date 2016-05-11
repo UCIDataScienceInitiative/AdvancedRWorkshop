@@ -1,0 +1,379 @@
+---
+title: "An Introduction to Stringr and Regular Expressions"
+author: "Brian Espinoza"
+output: ioslides_presentation
+---
+```{r echo=F}
+library(stringr)
+```
+# Introduction
+
+## Introduction
+
+- String processing is an important aspect of data mining and text analysis. 
+- Though R has some built-in functions to assist, they can be bulky, slow, and incomplete...
+
+Fret not, stringr is here!
+
+
+## stringr
+
+- stringr is a lightweight package designed by Hadley Wickham to assist with string manipulation.
+- Interacts seamlessly with the pipe ( %>% ) operator from dplyr / magrittr.
+- Much like Hadley's other packages, stringr's function names are consistent and its arguments are easy to understand.
+
+## Before We Begin
+
+### **Review of Strings**
+
+- Character strings in R are wrapped with quotes " "
+  - Character strings can be letters "a", 
+                             numbers "1", 
+                             symbols "&", 
+                             or both "a1&"
+- While numbers can be both integers and characters, letters and symbols have no integer meaning and thus create NAs.
+```{r}
+as.integer(c("a", "&"))
+```
+
+## Before We Begin
+
+### **Review of Strings**
+- Concatenating strings and integers with the c() function will convert the integers to characters.
+- By default, R converts objects to their lowest denomination.
+  - Factors reduce to integers and integers reduce to characters
+```{r}
+c(factor("a"), "b", "&", 1)
+c(as.character(factor("a")), "b", "&", 1)
+```
+
+## Agenda
+
+- Getting Started with stringr
+- Basic String Operators
+- Regular Expressions
+- Pattern Matching Functions
+- Final Exercise
+
+## Getting Started
+
+#### Loading stringr
+
+```{r warning = F, message = F, eval = F}
+install.packages("stringr")
+library(stringr)
+```
+
+#### Open Variables.R and load strings, fruit, and movie_titles
+
+```{r small = T}
+movie_titles <- c("gold diggers of broadway", "gone baby gone", 
+    "gone in 60 seconds", "gone with the wind", "good girl, the", 
+    "good burger", "goodbye girl, the", "good bye lenin!", 
+    "goodfellas", "good luck chuck", "good morning, vietnam", 
+    "good night, and good luck.", "good son, the", "good will hunting")
+
+strings <- c(" 219 733 8965", "329-293-8753 ", "banana", "595 794 7569",
+  "387 287 6718", "apple", "233.398.9187  ", "482 952 3315", 
+  "239 923 8115 and 842 566 4692", "Work: 579-499-7527", "$1000", "Home: 543.355.3679")
+
+fruit <- c("apple", "banana", "pear", "pineapple")
+
+```
+
+# Basic String Operators
+
+## Basic String Operators
+
+- String operators are basic string manipulation functions
+- Many of them have equivalent base R functions that are much slower and bulkier
+
+## Basic String Operators
+#### **str_to_upper(string)**
+    - converts strings to uppercase
+      - ex. Convert all movie_titles to uppercase and store them as movie_titles
+
+#### **str_to_lower(string)**
+    - converts strings to lowercase
+      - ex. Convert all movie_titles back to lowercase and save as movie_titles
+
+#### **str_to_title(string)**
+    - converts strings to title case
+      - ex. Convert all movie_titles to titlecase and store them as movie_titles
+      
+## str_to_upper(string)
+```{r}
+movie_titles <- str_to_upper(movie_titles)
+movie_titles
+```
+
+## str_to_lower(string)
+```{r}
+movie_titles <- str_to_lower(movie_titles)
+movie_titles
+```
+
+## str_to_title(string)
+```{r}
+movie_titles <- str_to_title(movie_titles)
+movie_titles
+```
+
+## Basic String Operators
+#### **str_c(string, sep = "")**
+    - Joins together multiple strings including integers
+    - Is the stringr equivalent to paste(sep = "") or paste0()
+
+#### **str_length(string)**
+    - Returns the string length
+    - Similar to base function nchar()
+    - str_length() converts factors to strings and also preserves NA's
+```{r small = T}
+nchar(NA)
+str_length(NA)
+```
+
+
+## Basic Strings Operators
+
+#### **str_sub(string, start, end) <- value**
+    - Subsets text within a string or vector of strings by specifying
+      start and end positions.
+    - Base equivalent function is substr()
+    - By default, end goes to the end of the word
+```{r}
+fruit
+str_sub(fruit, start = 3)
+```
+
+## Basic Strings Operators
+
+#### **str_dup(string, times)**
+    - Duplicates strings by a number of times.
+    - Essentially copy / paste function
+```{r}
+str_dup(fruit, 3)
+```
+
+## Basic Strings Operators
+
+#### **str_trim(string, side = c("both", "left", "right"))**
+    - Removes leading and trailing whitespaces
+    - Side argument defaults to "both"
+    - ex. trim the whitespace from both sides of every string in "strings"
+
+#### **str_pad(string, width, side = c("left", "both", "right"), pad = " ")**
+    - Pads strings with whitespace to make them a certain length
+    - Width argument lets users specify the width of the padding
+    - Side argument defaults to "left"
+    - ex. pad "movie_titles" with whitespace to the right such that each title 
+      becomes 30 characters long.
+
+## **str_trim(string, side = c("both", "left", "right"))**
+#### **ex. trim the whitespace from both sides of every string in strings**
+```{r small = T}
+str_trim(strings)
+```
+
+## str_pad(string, width, side = c("left", "both", "right"), pad = " ")
+
+#### **ex. pad movie_titles with whitespace to the right so that each title becomes 30 characters long.**
+```{r small = T}
+str_pad(movie_titles, side = "right", 30)
+```
+
+
+# Regular Expressions
+
+## Regular Expressions
+
+Pattern matching functions use patterns, otherwise known as "regular expressions" or "regex", to identify specific characteristics in strings.
+
+#### **Common expressions:**
+    - "a"  = is the letter "a"
+    - "^a" = starts with the letter "a"
+    - "a$" = ends with the letter "a"
+    - "[ ]" = contains any letter (or number) within the brackets
+    - "[ - ]" = contains any letter (or number) within this range
+    - "[^ae]" = everything except these letters (or numbers)
+    - "{3}" = repeat the last regex 3 times.
+  
+For more expressions or examples, refer to <http://www.regular-expressions.info/refquick.html>
+
+## Compound Expressions
+
+    Regular expressions can be combined to form compound expressions.
+
+    - "a"  = is the letter "a"
+    - "^a" = starts with the letter "a"
+    - "a$" = ends with the letter "a"
+    - "[ ]" = contains any letter (or number) within the brackets
+    - "[ - ]" = contains any letter (or number) within this range
+    - "[^ae]" = everything except these letters (or numbers)
+    - "{3}" = repeat the last regex 3 times.
+
+#### **California license plate:**
+    - California plates start with a number, followed by 3 letters, followed by   
+      another 3 numbers.
+    - Regex expression: "^[0-9][A-Z]{3}[0-9]{3}$"
+
+## Compound Expressions
+
+    - "a"  = is the letter "a"
+    - "^a" = starts with the letter "a"
+    - "a$" = ends with the letter "a"
+    - "[ ]" = contains any letter (or number) within the brackets
+    - "[ - ]" = contains any letter (or number) within this range
+    - "[^ae]" = everything except these letters (or numbers)
+    - "{3}" = repeat the last regex 3 times.
+    
+  - **Your turn:** create a regex expression that would identify any social security number. Please do not write your own...
+    - Format: SSS-SS-SSSS where S is any number between 0 and 9
+    
+## Social Security Example
+
+  - Format: SSS-SS-SSSS where S is any number between 0 and 9
+  - Regex expression: 
+    - "\^[0-9]{3}-[0-9]{2}-[0-9]{4}$"
+
+
+
+# Pattern Matching Functions
+
+## Pattern Matching Functions
+
+  - Now that we know how to build regular expressions, we can leverage these skills to perform even more advanced functions.
+  - Pattern matching functions in stringr take advantage of the regex syntax to perform helpful tasks.
+  - The usual form of these pattern matching functions consists of:
+      - function(string, pattern)
+    - string = a character string or a vector of character strings
+    - pattern = your regex request
+
+## Pattern Matching Functions
+
+#### **str_detect(string, pattern)**
+    - detects the presence of a pattern within a string or vector of strings
+    - returns a boolean (TRUE FALSE) vector
+```{r}
+str_detect(fruit, pattern = "^apple$")
+fruit[str_detect(fruit, "^apple$")]
+```
+
+
+## Pattern Matching Functions
+
+#### **str_locate(string, pattern)**
+    - locates and returns the start and end position of the first instance 
+      of the pattern.
+       - to locate every instance, use str_locate_all(string, pattern)
+```{r}
+fruit
+# on the second word, this pattern exists from the first character to the sixth
+str_locate(fruit, "^b[an]{5}")
+```
+
+## Pattern Matching Functions
+
+#### **str_extract(string, pattern) or str_extract_all()**
+    - matches the exact pattern to the string
+    - mainly used to extract compound patterns
+    
+#### **str_match(string, pattern) or str_match_all()**
+    - equivalent to str_extract except that str_match returns a matrix.
+    - str_(m)atch(): remember "m" for matrix!
+
+```{r small = T}
+labels <- c("a99", "a92", "a93l", "b99", "b92", "b93l",
+            "c99", "c92", "c93l", "e99", "e92", "e93l")
+
+# extract everything that begins with an "a" or "e" and ends with two numbers
+str_extract(labels, "^[ae][0-9]{2}$")
+```
+
+
+## Pattern Matching Functions
+
+#### Exercise:
+  - Extract every phone number from the variable "strings" that is composed of spaces " ". Extract it in matrix form.
+```{r}
+strings
+```
+
+## Pattern Matching Functions
+#### Exercise:
+```{r}
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
+  unlist() %>% matrix()
+```
+
+## Pattern Matching Functions
+#### Exercise:
+```{r}
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}")
+```
+
+## Pattern Matching Functions
+#### Exercise:
+```{r}
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
+  unlist()
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
+  unlist() %>% matrix()
+```
+
+## Pattern Matching Functions
+
+#### **str_replace(string, pattern, replacement)**
+    - replaces the first instance of the matched pattern with the replacement string
+    - str_replace_all replaces all instances of the pattern with the replacement string
+    - str_replace_na replaces all NA with "NA".
+```{r small = T}
+str_replace(fruit, pattern = "a", replacement = "e") # only the first instance
+str_replace_all(fruit, pattern = "a", replacement = "e") # every instance
+```
+  **Your turn:** In movie_titles, replace all instances of "Good" with "Bad".
+    
+
+## **str_replace(string, pattern, replacement)**
+```{r}
+str_replace_all(movie_titles, pattern = "Good", replacement = "Bad")
+```
+
+## Pattern Matching Functions
+#### **str_split(string, pattern)**
+  - splits a string into a variable number of pieces and returns a **list** of character vectors.
+```{r}
+str_split(movie_titles, "[ ,]")
+```
+
+## Pattern Matching Functions
+#### **str_split_fixed(string, pattern, n)**
+  - splits the string into a fixed number of pieces and returns a character **matrix**. 
+```{r}
+str_split_fixed(movie_titles, "[ ,]", 5)
+```
+
+# Questions?
+
+# Final Exercise
+
+## Final Exercise
+
+#### **Instructions**
+
+  1. Extract **all** phone numbers from the variable **strings**
+  2. Remove all "-" and "."
+  3. Split the numbers into a matrix
+      - First column contains area codes and the second column contains the rest of the phone number.
+  
+  Matrix should contain 10 phone numbers (rows) and 2 columns
+  
+## Final Exercise
+
+```{r}
+strings %>% str_match_all(pattern = "[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}") %>% 
+  unlist() %>% str_replace_all(pattern = "[-. ]", replacement = " ") %>% 
+  str_split_fixed(pattern = "[-. ]", 2)
+```
+
+# Thank you
