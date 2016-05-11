@@ -64,6 +64,12 @@ install.packages("stringr")
 library(stringr)
 ```
 
+## Getting Started
+
+Head over to <github.com/UCIDataScienceInitiative/AdvancedRWorkshop/> and from there, navigate to Introduction to Stringr and download Variables.R
+
+ - You can also download the slides to follow along but avoid looking ahead at the exercise answers.
+
 #### Open Variables.R and load strings, fruit, and movie_titles
 
 ```{r small = T}
@@ -80,6 +86,7 @@ strings <- c(" 219 733 8965", "329-293-8753 ", "banana", "595 794 7569",
 fruit <- c("apple", "banana", "pear", "pineapple")
 
 ```
+
 
 # Basic String Operators
 
