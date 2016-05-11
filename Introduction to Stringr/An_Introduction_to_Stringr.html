@@ -713,7 +713,7 @@ str_extract(labels, &quot;^[ae][0-9]{2}$&quot;)</pre>
 
 <pre class = 'prettyprint lang-r'>strings %&gt;% str_match_all(pattern = &quot;[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}&quot;) %&gt;% 
   unlist() %&gt;% str_replace_all(pattern = &quot;[-. ]&quot;, replacement = &quot; &quot;) %&gt;% 
-  str_split_fixed(pattern = &quot;[-. ]&quot;, 2)</pre>
+  str_split_fixed(pattern = &quot; &quot;, 2)</pre>
 
 <pre >##       [,1]  [,2]      
 ##  [1,] &quot;219&quot; &quot;733 8965&quot;

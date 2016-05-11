@@ -380,7 +380,7 @@ str_split_fixed(movie_titles, "[ ,]", 5)
 ```{r}
 strings %>% str_match_all(pattern = "[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}") %>% 
   unlist() %>% str_replace_all(pattern = "[-. ]", replacement = " ") %>% 
-  str_split_fixed(pattern = "[-. ]", 2)
+  str_split_fixed(pattern = " ", 2)
 ```
 
 # Thank you
