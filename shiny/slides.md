@@ -21,7 +21,7 @@ github:
 + easy
 + flexible
 + fun
-+ useful?!
++ useful
 
 ---
 
@@ -43,7 +43,6 @@ github:
 + extensions
 + sharing & deployment
 + exercise 2: a slightly more complicated app
-+ interactive graphics, taught by Lingge Li (Statistics)
 
 ---
 
@@ -64,10 +63,12 @@ github:
 
 Skeletal version:
 ```
-shinyUI(fluidPage(
-))
+shinyUI(...)
 ```
-
+Skin+bones version:
+```
+shinyUI(fluidPage())
+```
 Sidebar layout with text:
 ```
 shinyUI(fluidPage(
@@ -153,6 +154,26 @@ shinyServer(
 )
 ```
 
+---
+## 1 layout tip: Tab Sets
+In our previous example, we had the following main panel.
+
+```
+mainPanel("This text goes in the main part of the page",
+          textOutput("summaries"), plotOutput("samplePlot"))
+```
+
+If we have different types of output (e.g. plot, table, model output, etc) we can put each in a "Tab Set", which goes in the main panel, like this:
+
+```
+mainPanel(
+    tabsetPanel(
+      tabPanel("Plot", plotOutput("diamond.plot")), 
+      tabPanel("Summary", textOutput("summaries")) 
+    )
+)
+```
+
 
 ---
 ## Look at an example running app
@@ -173,6 +194,7 @@ Let's say you have a shiny app on your local file storage.
 
 Shiny automatically re-loads on source file changes!... but only for `ui.r` and `server.r`.
 
+
 ---
 ## Try running the hello world app!
 
@@ -189,10 +211,10 @@ runApp('/change/this/path/AdvancedRWorkshop/shiny/hello_world')
 ## Exercises
 
 + adding other controls
-  + changing the mean
-  + chaning the standard deviation
+  + to change the mean
+  + to change the standard deviation
 + try switching to a "tabset" layout, with a separate tab for the summary stats (instead of having the summary stats in the same main panel as the graphic)
-+ add a drop-down menu which can change the distribution
++ add a drop-down menu which can change the type distribution
 
 ---
 ## A few words about how this works
@@ -212,25 +234,6 @@ runApp('/change/this/path/AdvancedRWorkshop/shiny/hello_world')
  + `renderPlot` / `renderPlot` for plots (ggplot2 works fine!)
  + `actionButton` for triggering actions on server
 
----
-## 1 layout tip: Tab Sets
-In our previous example, we had the following main panel.
-
-```
-mainPanel("This text goes in the main part of the page",
-          textOutput("summaries"), plotOutput("samplePlot"))
-```
-
-If we have different types of output (e.g. plot, table, model output, etc) we can put each in a "Tab Set", which goes in the main panel, like this:
-
-```
-mainPanel(
-    tabsetPanel(
-      tabPanel("Plot", plotOutput("diamond.plot")), 
-      tabPanel("Summary", textOutput("summaries")) 
-    )
-)
-```
 
 ---
 ## Tables
@@ -394,6 +397,13 @@ runGitHub("AdvancedRWorkshop", "UCIDataScienceInitiative", subdir="shiny/hello_w
 + exploring Bayesian MCMC output: ShinyStan
 
 ---
+## DSI Resources
+
++ This workshop
++ Lingge Li's shiny office hour: 2-3 on Fridays, DBH 4222
++ The DSI shiny server: http://shiny.datascience.uci.edu/server/
+
+---
 ## Resources
 
 The official documentation from RStudio is pretty good. A few pointers:
@@ -410,8 +420,10 @@ The official documentation from RStudio is pretty good. A few pointers:
 
 ---
 ## Exercise 2
-+ For this exercise, you are invited to do _whatever_ you want with Shiny.
 + Suggested exercise: build, from scratch, an app that will explore the `diamonds` dataset of ggplot2 fame.
 + controls: scale, with 2 knobs, for subsetting the data
 + the server should subset the data accordingly and return a plot of the data over that subset
 + then add a checkbox for making the dots transparent
+
++ Alternatively, you are invited to do _whatever_ you want with Shiny.
+
