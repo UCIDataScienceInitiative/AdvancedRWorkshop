@@ -10,8 +10,7 @@ library(stringr)
 
 ## Introduction
 
-- String processing is an important aspect of data mining and text analysis. 
-- Though R has some built-in functions to assist, they can be bulky, slow, and incomplete...
+> > Strings play a big role in many data cleaning and preparations tasks. R provides a solid set of string operations, but because they have grown organically over time, they can be inconsistent and a little hard to learn. Additionally, they lag behind the string operations in other programming languages.
 
 Fret not, stringr is here!
 
@@ -66,11 +65,11 @@ library(stringr)
 
 ## Getting Started
 
-Head over to <github.com/UCIDataScienceInitiative/AdvancedRWorkshop/> and from there, navigate to Introduction to Stringr and download Variables.R
+Head over to **github.com/UCIDataScienceInitiative/AdvancedRWorkshop**, open **Introduction to Stringr** and download **Variables.R**
 
  - You can also download the slides to follow along but avoid looking ahead at the exercise answers.
 
-#### Open Variables.R and load strings, fruit, and movie_titles
+Then open **Variables.R** and load *strings*, *fruit*, and *movie_titles*
 
 ```{r small = T}
 movie_titles <- c("gold diggers of broadway", "gone baby gone", 
@@ -261,23 +260,38 @@ For more expressions or examples, refer to <http://www.regular-expressions.info/
 #### **str_detect(string, pattern)**
     - detects the presence of a pattern within a string or vector of strings
     - returns a boolean (TRUE FALSE) vector
+    - ex. use str_detect in a way that returns any string that contains "apple".
 ```{r}
 str_detect(fruit, pattern = "^apple$")
 fruit[str_detect(fruit, "^apple$")]
 ```
 
+## Pattern Matching Functions
+```{r}
+str_detect(fruit, pattern = "apple")
+fruit[str_detect(fruit, "apple")]
+```
 
 ## Pattern Matching Functions
 
 #### **str_locate(string, pattern)**
-    - locates and returns the start and end position of the first instance 
-      of the pattern.
-       - to locate every instance, use str_locate_all(string, pattern)
+    - locates and returns the start and end position of the first instance of the pattern.
+       - to locate more than one within a string, use str_locate_all(string, pattern)
+    - ex. use str_locate to find every position of "apple"
 ```{r}
 fruit
 # on the second word, this pattern exists from the first character to the sixth
-str_locate(fruit, "^b[an]{5}")
+str_locate(fruit, "banana")
 ```
+
+## Pattern Matching Functions
+
+```{r}
+fruit
+
+str_locate(fruit, "apple")
+```
+
 
 ## Pattern Matching Functions
 
@@ -307,11 +321,10 @@ strings
 ```
 
 ## Pattern Matching Functions
-#### Exercise:
 ```{r}
-str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
-  unlist() %>% matrix()
+str_match(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}")
 ```
+
 
 ## Pattern Matching Functions
 #### Exercise:
@@ -321,6 +334,24 @@ str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}")
 
 ## Pattern Matching Functions
 #### Exercise:
+```{r}
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
+  unlist() %>% matrix()
+```
+```{r eval = F}
+# ALTERNATIVELY
+matrix(unlist(str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}")))
+```
+
+## Pattern Matching Functions
+#### Exercise:
+```{r}
+str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}")
+```
+
+## Pattern Matching Functions
+
+##### tip: command shift m = %>%
 ```{r}
 str_match_all(strings, pattern = "[1-9]{3} [1-9]{3} [1-9]{4}") %>% 
   unlist()
