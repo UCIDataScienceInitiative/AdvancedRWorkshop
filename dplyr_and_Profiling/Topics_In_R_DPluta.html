@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Topics in R</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Dustin Pluta" />
+    <link href="libs/remark-css/example.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle
+
+# Topics in R
+## UCI Data Science Initiative
+### Dustin Pluta
+### 2 Dec 2016
+
+---
+
+
+
+
+
+---
+# Required Packages
+Install needed packages:
+
+```r
+# setwd(~/source/file/location/)
+install.packages('ggplot2')
+install.packages('dplyr')
+install.packages('broom')
+install.packages('microbenchmark')
+devtools::install_github('hadley/lineprof')
+```
+
+
+```r
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(microbenchmark)
+library(lineprof)
+```
+
+
+---
+
+# Topics
+
+
+1. Using &lt;code&gt;dplyr&lt;/code&gt; Functions
+
+--
+
+2. Examples with %&gt;%
+
+--
+
+3. Performant Code
+
+--
+
+4. Vectorisation
+
+--
+
+5. Profiling
+
+
+---
+
+# Some Resources for R
+
+* [Data Carpentry Lessons for R](http://www.datacarpentry.org/R-ecology-lesson/)
+
+* [dplyr Tutorial](http://genomicsclass.github.io/book/pages/dplyr_tutorial.html)
+
+* [Advanced R](http://adv-r.had.co.nz/)
+
+* [R for Data Science](http://r4ds.had.co.nz/)
+
+---
+
+# &lt;code&gt;dplyr&lt;/code&gt;
+
+* &lt;code&gt;dplyr&lt;/code&gt; is a package designed for easy and efficient data manipulation
+
+* Fast enough to work with large(ish) data sets
+
+* *tidyverse* philosophy: collection of small, simple functions that each do one thing well
+
+* Written by Hadley Wickham, Chief Scientist for R Studio, who also developed:
+
+    + &lt;code&gt;ggplot2&lt;/code&gt;
+
+    + &lt;code&gt;reshape2&lt;/code&gt;
+
+    + &lt;code&gt;tidyr &lt;/code&gt;
+
+    + many others
+
+---
+# Key Functions
+
+* &lt;code&gt; mutate&lt;/code&gt;: transform variables in a data set
+
+* &lt;code&gt; filter&lt;/code&gt;: select subset of rows (observations)
+
+* &lt;code&gt; select&lt;/code&gt;: select subset of columns (variables)
+
+* &lt;code&gt; arrange&lt;/code&gt;: reorder rows
+
+* &lt;code&gt; summarise&lt;/code&gt;: collapses a data frame into a single row
+
+![](Figures/iris.png)
+
+---
+# Simple &lt;code&gt;dplyr&lt;/code&gt; Examples
+* Let's try some &lt;code&gt;dplyr&lt;/code&gt; functions with the &lt;code&gt;iris&lt;/code&gt; data set:
+
+```r
+data(iris)
+iris &lt;-  filter(iris, Species!="setosa")
+iris &lt;- select(iris, c(Sepal.Width, Species)) 
+iris &lt;- group_by(iris, Species)
+iris &lt;- summarise(iris, mean(Sepal.Width))
+print(iris)
+```
+
+```
+## # A tibble: 2 × 2
+##      Species `mean(Sepal.Width)`
+##       &lt;fctr&gt;               &lt;dbl&gt;
+## 1 versicolor               2.770
+## 2  virginica               2.974
+```
+
+* Note that each function has the form &lt;code&gt;f(data, ...)&lt;/code&gt;: first 
+argument is a data frame, second argument indicates what 
+to do with the data frame.
+* Each function is designed to perform a single specific type of operation on a data frame.
+* Data can be cleaned and organized by chaining these operations together.
+
+---
+# Introducing &lt;code&gt;%&gt;%&lt;/code&gt;
+* &lt;code&gt;dplyr&lt;/code&gt; (and much of the *tidyverse*) is designed around the use of 
+the pipe operator &lt;code&gt;%&gt;%&lt;/code&gt;
+
+* The pipe operator &lt;code&gt;%&gt;%&lt;/code&gt; allows you to chain operations on a data set together 
+without having to create specific intermediate objects
+
+* When using %&gt;%, the first argument to a function is taken as the output of the previous step in the chain
+
+* For example, the following is equivalent to the previous code:
+
+```r
+data(iris)
+iris %&gt;% filter(Species!="setosa") %&gt;%
+    select(c(Sepal.Width, Species)) %&gt;% 
+    group_by(Species) %&gt;%
+    summarise(mean(Sepal.Width))
+```
+
+```
+## # A tibble: 2 × 2
+##      Species `mean(Sepal.Width)`
+##       &lt;fctr&gt;               &lt;dbl&gt;
+## 1 versicolor               2.770
+## 2  virginica               2.974
+```
+
+---
+# &lt;code&gt;dplyr&lt;/code&gt; Exercises
+
+1. Use &lt;code&gt;dplyr&lt;/code&gt; to calculate the mean Sepal Width of the virginica species.
+
+2. &lt;code&gt;summarise&lt;/code&gt; can summarise multiple variables simultaneously, apply a 
+different function to each variable.  
+Adapt the following code to find the minimum, median, 
+maximum, and standard deviation of the Sepal.Width for the virginica species.
+
+3. &lt;code&gt;group_by()&lt;/code&gt; makes &lt;code&gt;summarise&lt;/code&gt; even more useful by allowing you 
+to summarise values across groups of a category simultaneously.  
+Using &lt;code&gt;group_by&lt;/code&gt;, adapt your code from the previous problem to produce the summary values for each species.
+
+
+**Modify this code for problems 2 and 3:**
+
+```r
+data(iris)
+iris %&gt;% summarise(mean_sepal_width = mean(Sepal.Width),
+                   min_sepal_width = min(Sepal.Width))
+```
+
+
+---
+class: center, middle
+# Performant Code
+
+&gt;“We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%. A good programmer will not be lulled into complacency by such reasoning, he will be wise to look carefully at the critical code; but only after that code has been identified.”
+Donald Knuth.
+
+![](Figures/young-donald-knuth.jpg)
+
+
+---
+# Performant Code
+
+* When writing code, there are many different resources to consider:
+    + Speed
+    + Memory
+    + Developer Time
+    + Reusability
+
+* We want to make the data analysis process easy, convenient, and reliable, not to 
+write the fastest code possible.
+
+* Goal: learn easy methods and tools to reduce the time and burden of programming 
+for data analysis.
+    + Vectorisation
+    + Profiling tools
+    + Design principles
+
+---
+# Performant Code
+
+**Procedures** (from [Advanced R](adv-r.had.co.na/Profiling.html#improve-perf])):
+
+1. Identify the bottlenecks in a script with profiling tools.
+    + &lt;code&gt;microbenchmark&lt;/code&gt;
+    + &lt;code&gt;lineprof&lt;/code&gt;
+2. Look for existing solutions.
+    + Published packages
+    + StackOverflow
+3. Vectorise.
+    + &lt;code&gt; apply, lapply &lt;/code&gt;
+    + Specialized functions, e.g. &lt;code&gt;colSums, rowSums
+4. Parallelise.
+5. Avoid copying code uncessarily; avoid superfluous copies of data and variables.
+6. Byte-code compile.
+7. Rewrite in a faster language (C++, Rcpp, Julia).
+
+
+---
+# Vectorisation
+
+* R is **bad** with "native" &lt;code&gt;for&lt;/code&gt; loops, due to various aspects of 
+R's design
+
+* Vectorised functions in R tend to be much faster than equivalent loops.
+
+* The underlying loops of the vectorised fucntions are implemented in a lower level 
+language like C, which can greatly improve runtimes.
+
+* Key functions:
+    + **&lt;code&gt;apply(X, MARGIN, FUN)&lt;/code&gt;:** Apply function FUN to matrix/array X, across the dimension(s) specified by MARGIN.
+    
+    + **&lt;code&gt;sapply(X, FUN)&lt;/code&gt;:** Apply a function to a list of vectors, lists, or similar, and returns a vector or matrix by default.
+
+---
+# Vectorisation: Iris Example
+
+Suppose we want to calculate the mean of all the numeric variables in the &lt;code&gt;iris&lt;/code&gt; 
+data set.
+
+
+```r
+data(iris)
+head(iris)
+```
+
+```
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa
+```
+
+```r
+# With a loop:
+iris_means &lt;- c()
+for (i in 1:4) {
+    iris_means[i] &lt;- mean(iris[, i])
+}
+
+# Vectorised:
+iris_means &lt;- apply(iris[, -5], 2, mean)
+```
+
+---
+# Vectorisation: Iris Example
+Let's use vectorisation to calculate 95% bootstrap confidence intervals for the 
+median Sepal.Length for each iris species.
+
+**Part A**
+First, use &lt;code&gt;group_by&lt;/code&gt; and &lt;code&gt;summarise&lt;/code&gt; to calculate the median Sepal Length of each species.  Then plot density/histogram plots of the distributions 
+of Sepal Lengths for the three species using &lt;code&gt;ggplot&lt;/code&gt;.
+
+---
+# Vectorisation: Iris Example
+**Part A**
+*Solution*
+
+
+```r
+iris_medians &lt;- group_by(iris, Species) %&gt;%
+    summarise(median(Sepal.Length))
+
+ggplot(iris, aes(Sepal.Length, fill=Species)) + 
+    geom_density(alpha = 0.3) + 
+    geom_vline(aes(xintercept = iris_medians[, 2]))
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-7-1.png" width="672" /&gt;
+
+---
+# Vectorisation: Iris Example
+**Part B**
+
+Suppose we want to print the lower and upper 95\% bootstrap estimates, along with the sample median Sepal Length.  Clean up and rewrite the following bootstrap code using vectorisation and &lt;code&gt;dplyr&lt;/code&gt; functions. (Hint: the &lt;code&gt;boostrap()&lt;/code&gt; 
+function from &lt;code&gt;broom&lt;/code&gt; makes bootstrap sampling easy.)
+
+---
+# Vectorisation: Iris Example
+**Part B**
+
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa &lt;- subset(iris, Species == "setosa")
+boot_samples &lt;- matrix(nrow=B, ncol=n)
+boot_medians &lt;- c()
+for (b in 1:B) {
+    boot_samples[b, ] &lt;- sample_n(setosa, n, replace=TRUE)[, "Sepal.Length"] 
+    boot_medians[b] &lt;- median(boot_samples[b, ])
+}
+
+boot_median_est &lt;- mean(boot_medians)
+boot_lower &lt;- boot_medians[order(boot_medians)][round(0.025*B)]
+boot_upper &lt;- boot_medians[order(boot_medians)][round(0.975*B)]
+```
+
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Use the &lt;code&gt;boostrap()&lt;/code&gt; function.
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa &lt;- subset(iris, Species == "setosa")
+boot_samples &lt;- matrix(nrow=B, ncol=n)
+boot_medians &lt;- c()
+
+boot_samples &lt;- bootstrap(setosa, B)
+
+boot_median_est &lt;- mean(boot_medians)
+boot_lower &lt;- boot_medians[order(boot_medians)][round(0.025*B)]
+boot_upper &lt;- boot_medians[order(boot_medians)][round(0.975*B)]
+cat("Est Median Sepal Length: ", boot_median_est, "\n", 
+    "95% Bootstrap CI for Median Sepal Length: (", 
+    boot_lower, ",", boot_upper, ")\n")
+```
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Replace &lt;code&gt;subset&lt;/code&gt; with &lt;code&gt;filter&lt;/code&gt;, and remove extraneous declarations.
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa &lt;- filter(iris, Species == "setosa")
+
+boot_samples &lt;- bootstrap(setosa, B)
+```
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Calculate medians for each replicate using &lt;code&gt;do&lt;/code&gt; and &lt;code&gt;tidy&lt;/code&gt;.
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa &lt;- filter(iris, Species == "setosa")
+
+boot_samples &lt;- bootstrap(setosa, B)
+boot_medians &lt;- boot_samples %&gt;% do(tidy(median(.$Sepal.Length)))
+```
+
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Calculate bootstrap confidence bounds for the median Sepal Length.
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa &lt;- filter(iris, Species == "setosa")
+
+boot_samples &lt;- bootstrap(setosa, B)
+boot_medians &lt;- boot_samples %&gt;% do(tidy(median(.$Sepal.Length)))
+boot_bounds &lt;- quantile(boot_medians$x, probs=c(0.025, 0.975))
+
+cat("Est Median Sepal Length: ", mean(boot_medians$x), "\n", 
+    "95% Bootstrap CI for Median Sepal Length: (", 
+    boot_bounds[1], ",", boot_bounds[2], ")\n")
+```
+
+```
+## Est Median Sepal Length:  5.01195 
+##  95% Bootstrap CI for Median Sepal Length: ( 4.9 , 5.1 )
+```
+
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Calculate bootstrap confidence bounds for the median Sepal Length.
+
+```r
+data(iris)
+set.seed(1234)
+B &lt;- 1000 # Number of bootstrap samples
+n &lt;- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+boot_medians &lt;- iris %&gt;% 
+    filter(Species == "setosa") %&gt;%
+    bootstrap(B) %&gt;% 
+    do(tidy(median(.$Sepal.Length)))
+boot_bounds &lt;- quantile(boot_medians$x, probs=c(0.025, 0.975))
+
+cat("Est Median Sepal Length: ", mean(boot_medians$x), "\n", 
+    "95% Bootstrap CI for Median Sepal Length: (", 
+    boot_bounds[1], ",", boot_bounds[2], ")\n")
+```
+
+```
+## Est Median Sepal Length:  5.01195 
+##  95% Bootstrap CI for Median Sepal Length: ( 4.9 , 5.1 )
+```
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+
+```r
+ggplot(boot_medians, aes(x)) + 
+    geom_histogram(binwidth=0.05)
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-14-1.png" width="672" /&gt;
+
+---
+# Profiling
+
+**&lt;code&gt;lineprof&lt;/code&gt;** is a package for profiling R scripts.
+
+Here is an example on a simple function, from [Advanced R](adv-r/had/co.nz/Profiling.html)
+
+
+```r
+library(lineprof)
+f &lt;- function() {
+  pause(0.1)
+  g()
+  h()
+}
+g &lt;- function() {
+  pause(0.1)
+  h()
+}
+h &lt;- function() {
+  pause(0.1)
+}
+
+L &lt;- lineprof(f())
+```
+
+---
+# Profiling
+
+
+```r
+# lm runs too fast on small data to test with lineprof
+data(iris)
+lineprof(lm(Sepal.Length ~ Species, data=iris))
+```
+
+
+```r
+# Simulate some bigger data to test lm
+N &lt;- 1E4
+beta &lt;- c(1, 0, 2, -3, 4)
+X &lt;- as.matrix(rnorm(N*length(beta), 10, 1), nrow=N)
+Y &lt;- X%*%beta + rnorm(N, 0, 2)
+L &lt;- lineprof(lm(Y ~ X))
+```
+
+---
+# Profiling
+* The profiling package &lt;code&gt;microbenchmark&lt;/code&gt; can also be used to profile 
+small pieces of code.
+
+* &lt;code&gt;microbenchmark&lt;/code&gt; will run input code many times to try to get stable 
+estimates of run times, thus it can take very long to run for complicated or long-running 
+functions.
+
+
+```r
+library(microbenchmark)
+microbenchmark(lm(Sepal.Length ~ Species, data=iris))
+```
+
+```
+## Unit: microseconds
+##                                     expr     min       lq     mean  median
+##  lm(Sepal.Length ~ Species, data = iris) 569.806 585.1965 685.6541 625.222
+##       uq      max neval
+##  700.599 2782.338   100
+```
+
+```r
+microbenchmark(lm(Y ~ X))
+```
+
+```
+## Unit: milliseconds
+##       expr      min       lq     mean   median       uq      max neval
+##  lm(Y ~ X) 37.90359 75.74044 77.66214 76.24466 77.97349 121.6059   100
+```
+
+---
+# Profiling: Vectorisation
+
+Let's compare the speeds of for loops and the equivalent vectorisations.
+
+
+```r
+set.seed(1234)
+n &lt;- 100
+a &lt;- rnorm(n)
+b &lt;- rexp(n, 5)
+
+dot_loop &lt;- function(a, b) {
+    result &lt;- 0
+    for (i in 1:n)
+        result &lt;- result + a[i]*b[i]
+    return(result)
+}
+dot_loop(a, b)
+```
+
+```
+## [1] -5.083198
+```
+
+```r
+a%*%b
+```
+
+```
+##           [,1]
+## [1,] -5.083198
+```
+
+---
+# Profiling: Vectorisation
+
+```r
+microbenchmark(dot_loop(a, b))
+```
+
+```
+## Unit: microseconds
+##            expr   min      lq    mean  median     uq    max neval
+##  dot_loop(a, b) 34.16 35.4415 38.0173 35.9425 36.582 92.124   100
+```
+
+```r
+microbenchmark(a%*%b)
+```
+
+```
+## Unit: nanoseconds
+##     expr min  lq   mean median    uq  max neval
+##  a %*% b 490 499 560.48    505 514.5 5107   100
+```
+
+---
+# Profiling: Vectorisation
+
+```r
+set.seed(1234)
+n &lt;- 1E5
+a &lt;- rnorm(n, 10, 2)
+b &lt;- rexp(n, 5)
+
+microbenchmark(dot_loop(a, b))
+```
+
+```
+## Unit: milliseconds
+##            expr      min       lq     mean   median       uq      max
+##  dot_loop(a, b) 29.73358 31.55081 32.57703 31.84717 32.21063 60.94672
+##  neval
+##    100
+```
+
+```r
+microbenchmark(a%*%b)
+```
+
+```
+## Unit: microseconds
+##     expr     min      lq     mean   median       uq     max neval
+##  a %*% b 248.714 250.551 251.2313 250.5965 250.6765 303.795   100
+```
+
+---
+# Profiling: Vectorisation
+
+```r
+# This size may take a minute or two to finish
+set.seed(1234)
+n &lt;- 1E6
+a &lt;- rnorm(n, 10, 2)
+b &lt;- rexp(n, 5)
+
+microbenchmark(dot_loop(a, b))
+microbenchmark(a%*%b)
+```
+
+---
+# Profiling: Vector Sum Example
+
+Let's compare summing a vector with &lt;code&gt;sum&lt;/code&gt; vs a for loop.
+
+
+```r
+loop_sum &lt;- function(x) {
+    result &lt;- 0
+    for (i in 1:length(x)) {
+        result &lt;- result + x[i]
+    }
+    return(result)
+}
+
+vect_sum &lt;- function(x) {
+    return(sum(x))
+}
+```
+
+---
+# Profiling: Vector Sum Example
+
+```r
+set.seed(1234)
+x &lt;- rnorm(500)
+
+microbenchmark(loop_sum(x))
+```
+
+```
+## Unit: microseconds
+##         expr     min       lq     mean  median       uq     max neval
+##  loop_sum(x) 111.655 114.9585 118.7349 118.143 120.4885 149.922   100
+```
+
+```r
+microbenchmark(vect_sum(x))
+```
+
+```
+## Unit: nanoseconds
+##         expr min  lq   mean median    uq   max neval
+##  vect_sum(x) 665 671 949.86  684.5 748.5 17222   100
+```
+
+---
+# Profiling: &lt;code&gt;aggregate&lt;/code&gt; vs &lt;code&gt;dplyr&lt;/code&gt;
+
+Let's compare using &lt;code&gt;aggregate&lt;/code&gt; to &lt;code&gt;dplyr&lt;/code&gt; for 
+finding the standard deviation of Sepal Length for each of the iris species.
+
+
+```r
+data(iris)
+
+microbenchmark(aggregate(Sepal.Length ~ Species, data=iris, FUN=mean))
+```
+
+```
+## Unit: microseconds
+##                                                        expr     min
+##  aggregate(Sepal.Length ~ Species, data = iris, FUN = mean) 536.678
+##       lq     mean  median      uq      max neval
+##  567.965 615.3331 583.758 606.836 3406.675   100
+```
+
+```r
+microbenchmark(iris %&gt;% 
+                   group_by(Species) %&gt;% 
+                   summarise(mean(Sepal.Length)))
+```
+
+```
+## Unit: microseconds
+##                                                          expr     min
+##  iris %&gt;% group_by(Species) %&gt;% summarise(mean(Sepal.Length)) 497.487
+##       lq     mean   median       uq      max neval
+##  512.798 556.7487 537.4775 589.4155 1383.665   100
+```
+
+---
+# Profiling: &lt;code&gt;aggregate&lt;/code&gt; vs &lt;code&gt;dplyr&lt;/code&gt;
+
+
+```r
+country &lt;- read.csv("Data/countryLandTemperaturesByCountry.csv")
+
+microbenchmark(aggregate(AverageTemperature ~ Country, data=country, FUN=mean))
+microbenchmark(country %&gt;% group_by(Country) %&gt;% 
+                   summarise(mean(AverageTemperature)))
+```
+
+---
+# Profiling: Iris Example
+
+To profile the previous code from the Iris Example, we wrap everything 
+in a function:
+
+```r
+set.seed(1234)
+data(iris)
+
+iris_loop &lt;- function(B, n=50,
+                           species="setosa", var="Sepal.Length") {
+    iris_species &lt;- subset(iris, Species == species)
+    boot_samples &lt;- matrix(nrow=B, ncol=n)
+    boot_medians &lt;- c()
+    for (b in 1:B) {
+        boot_samples[b, ] &lt;- sample_n(setosa, n, replace=TRUE)[, var] 
+        boot_medians[b] &lt;- median(boot_samples[b, ])
+    }
+    boot_median_est &lt;- mean(boot_medians)
+    boot_lower &lt;- boot_medians[order(boot_medians)][round(0.025*B)]
+    boot_upper &lt;- boot_medians[order(boot_medians)][round(0.975*B)]
+    return(c(boot_median_est, boot_lower, boot_upper))
+}
+iris_loop(50)
+```
+
+```
+## [1] 5.013 4.900 5.100
+```
+
+---
+# Profiling: Iris Example
+
+```r
+microbenchmark(iris_loop(300))
+lineprof(iris_loop(1000))
+```
+
+---
+# Profiling: Iris Example
+
+Now for the &lt;code&gt;dplyr&lt;/code&gt;.
+
+```r
+set.seed(1234)
+iris_vect &lt;- function(B, n=50, species="setosa") {
+    boot_medians &lt;- iris %&gt;% 
+        filter(Species == species) %&gt;%
+        bootstrap(B) %&gt;% 
+        do(tidy(median(.$Sepal.Length)))
+    boot_bounds &lt;- quantile(boot_medians$x, probs=c(0.025, 0.975))
+    return(c(mean(boot_medians$x), boot_bounds))
+}
+iris_vect(50)
+```
+
+```
+##            2.5%   97.5% 
+## 5.01300 4.91125 5.10000
+```
+
+---
+# Profiling: Iris Example
+
+Comparing the two versions for the bootstrap iris estimates.
+
+
+```r
+microbenchmark(iris_loop(300))
+```
+
+```
+## Unit: milliseconds
+##            expr      min       lq     mean   median       uq      max
+##  iris_loop(300) 37.31693 38.19206 38.92121 38.39964 38.94992 73.73623
+##  neval
+##    100
+```
+
+```r
+microbenchmark(iris_vect(300))
+```
+
+```
+## Unit: milliseconds
+##            expr      min       lq    mean   median       uq      max neval
+##  iris_vect(300) 61.52276 63.81639 66.3273 66.09401 68.24763 97.31962   100
+```
+
+
+```r
+lineprof(iris_loop(2000))
+```
+
+```
+## Reducing depth to 2 (from 11)
+```
+
+```
+##     time  alloc release  dups                                  ref
+## 1  0.005 14.556   0.000  8826 c("sample_n", "sample_n.data.frame")
+## 2  0.001  2.742   0.000  1574        c("median", "median.default")
+## 3  0.001  2.751   0.000  1576                         character(0)
+## 4  0.002  5.528   0.000  3178 c("sample_n", "sample_n.data.frame")
+## 5  0.001  0.000  27.438  1573                         character(0)
+## 6  0.003  9.600   0.000  4803 c("sample_n", "sample_n.data.frame")
+## 7  0.001  3.164   0.000  1813        c("median", "median.default")
+## 8  0.006 14.947  27.070 10368 c("sample_n", "sample_n.data.frame")
+## 9  0.002  6.446   0.000  3183        c("median", "median.default")
+## 10 0.001  3.154   0.000  1836 c("sample_n", "sample_n.data.frame")
+## 11 0.001  3.140   0.000  1805        c("median", "median.default")
+## 12 0.001  3.059   0.000  1793                         character(0)
+## 13 0.002  6.150   0.000  3502 c("sample_n", "sample_n.data.frame")
+## 14 0.001  3.095   0.000  1754        c("median", "median.default")
+## 15 0.001  1.746   0.000  1759 c("sample_n", "sample_n.data.frame")
+## 16 0.001  0.000  26.121  1212        c("median", "median.default")
+## 17 0.003  9.574   0.000  5365 c("sample_n", "sample_n.data.frame")
+## 18 0.001  3.100   0.000  1799                             "median"
+## 19 0.005 12.336  27.678  8787 c("sample_n", "sample_n.data.frame")
+## 20 0.001  3.239   0.000  1070        c("median", "median.default")
+## 21 0.002  6.406   0.000  3678 c("sample_n", "sample_n.data.frame")
+## 22 0.001  3.180   0.000  1804                         character(0)
+## 23 0.002  6.197   0.000  3571 c("sample_n", "sample_n.data.frame")
+## 24 0.001  3.089   0.000  1755        c("median", "median.default")
+## 25 0.002  6.182   0.000  3500 c("sample_n", "sample_n.data.frame")
+## 26 0.001  0.000  27.724  1760               c("[", "[.data.frame")
+## 27 0.003  9.656   0.000  4758 c("sample_n", "sample_n.data.frame")
+## 28 0.001  3.190   0.000  1800        c("median", "median.default")
+## 29 0.009 25.152  27.757 15336 c("sample_n", "sample_n.data.frame")
+## 30 0.001  3.178   0.000  1807                           "sample_n"
+## 31 0.002  3.107   0.000  3538 c("sample_n", "sample_n.data.frame")
+##                             src
+## 1  sample_n/sample_n.data.frame
+## 2  median/median.default       
+## 3                              
+## 4  sample_n/sample_n.data.frame
+## 5                              
+## 6  sample_n/sample_n.data.frame
+## 7  median/median.default       
+## 8  sample_n/sample_n.data.frame
+## 9  median/median.default       
+## 10 sample_n/sample_n.data.frame
+## 11 median/median.default       
+## 12                             
+## 13 sample_n/sample_n.data.frame
+## 14 median/median.default       
+## 15 sample_n/sample_n.data.frame
+## 16 median/median.default       
+## 17 sample_n/sample_n.data.frame
+## 18 median                      
+## 19 sample_n/sample_n.data.frame
+## 20 median/median.default       
+## 21 sample_n/sample_n.data.frame
+## 22                             
+## 23 sample_n/sample_n.data.frame
+## 24 median/median.default       
+## 25 sample_n/sample_n.data.frame
+## 26 [/[.data.frame              
+## 27 sample_n/sample_n.data.frame
+## 28 median/median.default       
+## 29 sample_n/sample_n.data.frame
+## 30 sample_n                    
+## 31 sample_n/sample_n.data.frame
+```
+
+```r
+lineprof(iris_vect(2000))
+```
+
+```
+## Reducing depth to 2 (from 25)
+```
+
+```
+##    time   alloc release   dups                     ref             src
+## 1 0.128 263.321 241.497 122006 c("%&gt;%", "withVisible") %&gt;%/withVisible
+```
+
+
+---
+# Profiling: Iris Example
+
+Now for the &lt;code&gt;dplyr&lt;/code&gt; version.
+
+```r
+set.seed(1234)
+iris_vect &lt;- function(B, n=50, species="setosa") {
+    boot_medians &lt;- iris %&gt;% 
+        filter(Species == species) %&gt;%
+        bootstrap(B) %&gt;%
+        do(tidy(median(.$Sepal.Length)))
+    boot_bounds &lt;- quantile(boot_medians$x, probs=c(0.025, 0.975))
+    return(c(mean(boot_medians$x), boot_bounds))
+}
+iris_vect(50)
+```
+
+```
+##            2.5%   97.5% 
+## 5.01300 4.91125 5.10000
+```
+
+---
+# Profiling: Iris Example
+
+Comparing the two versions for the bootstrap iris estimates.
+
+
+```r
+microbenchmark(iris_loop(100))
+```
+
+```
+## Unit: milliseconds
+##            expr      min       lq     mean   median       uq      max
+##  iris_loop(100) 11.87269 12.06761 13.06709 12.58061 13.84288 18.66856
+##  neval
+##    100
+```
+
+```r
+microbenchmark(iris_vect(100))
+```
+
+```
+## Unit: milliseconds
+##            expr      min       lq     mean   median       uq     max neval
+##  iris_vect(100) 20.51289 21.44235 22.37958 22.17499 23.26737 27.6921   100
+```
+
+
+```r
+lineprof(iris_loop(3000))
+```
+
+```
+## Reducing depth to 2 (from 10)
+```
+
+```
+##     time  alloc release  dups                                  ref
+## 1  0.001  3.000   0.000  2966 c("sample_n", "sample_n.data.frame")
+## 2  0.001  2.962   0.000  1724        c("median", "median.default")
+## 3  0.001  3.071   0.000  1695 c("sample_n", "sample_n.data.frame")
+## 4  0.001  3.042   0.000  1773               c("[", "[.data.frame")
+## 5  0.004 12.089   0.000  6995 c("sample_n", "sample_n.data.frame")
+## 6  0.001  0.000  27.266  1695        c("median", "median.default")
+## 7  0.011 32.492  27.423 19060 c("sample_n", "sample_n.data.frame")
+## 8  0.001  3.269   0.000  1874               c("[", "[.data.frame")
+## 9  0.005 16.246   0.000  9308 c("sample_n", "sample_n.data.frame")
+## 10 0.001  2.783   0.000  1837                             "median"
+## 11 0.001  0.000  27.124  1585 c("sample_n", "sample_n.data.frame")
+## 12 0.001  3.094   0.000  1336        c("median", "median.default")
+## 13 0.002  6.143   0.000  3514 c("sample_n", "sample_n.data.frame")
+## 14 0.001  3.117   0.000  1751                         character(0)
+## 15 0.002  6.213   0.000  3534 c("sample_n", "sample_n.data.frame")
+## 16 0.001  3.096   0.000  1778        c("median", "median.default")
+## 17 0.003  5.303  26.425  4916 c("sample_n", "sample_n.data.frame")
+## 18 0.001  3.234   0.000  1630               c("[", "[.data.frame")
+## 19 0.008 22.761  27.600 14756 c("sample_n", "sample_n.data.frame")
+## 20 0.001  3.219   0.000  1151               c("[", "[.data.frame")
+## 21 0.001  3.215   0.000  1817 c("sample_n", "sample_n.data.frame")
+## 22 0.001  3.242   0.000  1832        c("median", "median.default")
+## 23 0.001  3.277   0.000  1835 c("sample_n", "sample_n.data.frame")
+## 24 0.001  3.279   0.000  1855        c("median", "median.default")
+## 25 0.011 31.643  26.685 19593 c("sample_n", "sample_n.data.frame")
+## 26 0.001  3.255   0.000  1848                         character(0)
+## 27 0.001  3.203   0.000  1834 c("sample_n", "sample_n.data.frame")
+## 28 0.001  0.000  27.996  1811               c("[", "[.data.frame")
+## 29 0.008 25.965   0.000 13822 c("sample_n", "sample_n.data.frame")
+## 30 0.001  3.010   0.000  1802                             "median"
+## 31 0.002  3.239  27.629  2941 c("sample_n", "sample_n.data.frame")
+## 32 0.001  3.270   0.000  1829                         character(0)
+## 33 0.001  3.287   0.000  1834               c("[", "[.data.frame")
+## 34 0.004 13.078   0.000  7359 c("sample_n", "sample_n.data.frame")
+## 35 0.001  3.256   0.000  1828               c("[", "[.data.frame")
+## 36 0.003  6.522  27.908  4779 c("sample_n", "sample_n.data.frame")
+## 37 0.001  3.275   0.000  1840                         character(0)
+## 38 0.006 19.453   0.000 11017 c("sample_n", "sample_n.data.frame")
+## 39 0.001  0.000   0.000  1699                         character(0)
+##                             src
+## 1  sample_n/sample_n.data.frame
+## 2  median/median.default       
+## 3  sample_n/sample_n.data.frame
+## 4  [/[.data.frame              
+## 5  sample_n/sample_n.data.frame
+## 6  median/median.default       
+## 7  sample_n/sample_n.data.frame
+## 8  [/[.data.frame              
+## 9  sample_n/sample_n.data.frame
+## 10 median                      
+## 11 sample_n/sample_n.data.frame
+## 12 median/median.default       
+## 13 sample_n/sample_n.data.frame
+## 14                             
+## 15 sample_n/sample_n.data.frame
+## 16 median/median.default       
+## 17 sample_n/sample_n.data.frame
+## 18 [/[.data.frame              
+## 19 sample_n/sample_n.data.frame
+## 20 [/[.data.frame              
+## 21 sample_n/sample_n.data.frame
+## 22 median/median.default       
+## 23 sample_n/sample_n.data.frame
+## 24 median/median.default       
+## 25 sample_n/sample_n.data.frame
+## 26                             
+## 27 sample_n/sample_n.data.frame
+## 28 [/[.data.frame              
+## 29 sample_n/sample_n.data.frame
+## 30 median                      
+## 31 sample_n/sample_n.data.frame
+## 32                             
+## 33 [/[.data.frame              
+## 34 sample_n/sample_n.data.frame
+## 35 [/[.data.frame              
+## 36 sample_n/sample_n.data.frame
+## 37                             
+## 38 sample_n/sample_n.data.frame
+## 39
+```
+
+```r
+lineprof(iris_vect(3000))
+```
+
+```
+## Reducing depth to 2 (from 24)
+```
+
+```
+##    time   alloc release   dups                     ref             src
+## 1 0.157 384.337 387.658 182469 c("%&gt;%", "withVisible") %&gt;%/withVisible
+```
+
+
+---
+# Profiling Exercise
+
+1. Suppose we want to find the column sums of the numeric variables in the &lt;code&gt;iris&lt;/code&gt; data set.  
+Use &lt;code&gt;microbenchmark&lt;/code&gt; to compare the speed of three methods for computing 
+the column sums:
+    + double for-loop over columns and rows
+    + &lt;code&gt;apply&lt;/code&gt; and &lt;code&gt;sum&lt;/code&gt;
+    + &lt;code&gt;colSums&lt;/code&gt;
+    
+2. Simulate a random large matrix (say 100 x 100 or more), and benchmark the different column 
+sum methods.
+
+---
+# Profiling Exercise
+*Solution*
+
+
+```r
+data(iris)
+
+loop &lt;- function(dat) {
+    sums &lt;- c()
+    for (j in 1:4) {
+        result &lt;- 0
+        for (i in nrow(dat)) {
+            result &lt;- result + iris[i, j]
+        }
+        sums &lt;- c(sums, result)
+    }
+    return(sums)
+}
+
+my_apply &lt;- function(dat) {
+   return(apply(dat, 2, sum))
+}
+
+my_colsums &lt;- function(dat)
+    return(colSums(dat))
+```
+
+---
+# Profiling Exercise
+*Solution*
+
+```r
+microbenchmark(loop(iris[, -5]))
+```
+
+```
+## Unit: microseconds
+##              expr    min      lq     mean  median      uq    max neval
+##  loop(iris[, -5]) 45.787 46.7425 52.61748 47.5155 54.6075 292.58   100
+```
+
+```r
+microbenchmark(my_apply(iris[, -5]))
+```
+
+```
+## Unit: microseconds
+##                  expr    min      lq     mean median      uq     max neval
+##  my_apply(iris[, -5]) 50.897 52.5705 56.48706 53.404 59.8235 130.352   100
+```
+
+```r
+microbenchmark(my_colsums(iris[, -5]))
+```
+
+```
+## Unit: microseconds
+##                    expr   min      lq     mean median      uq    max neval
+##  my_colsums(iris[, -5]) 33.88 34.5735 38.92291 35.345 41.5165 208.19   100
+```
+
+---
+# Profiling Exercise
+
+
+```r
+set.seed(1234)
+n_col &lt;- 100
+n_row &lt;- 100
+X &lt;- matrix(rnorm(n_col*n_row), nrow=n_row)
+
+microbenchmark(loop(X))
+```
+
+```
+## Unit: microseconds
+##     expr    min     lq     mean median     uq    max neval
+##  loop(X) 30.092 30.748 33.54239 31.147 33.048 73.326   100
+```
+
+```r
+microbenchmark(my_apply(X))
+```
+
+```
+## Unit: microseconds
+##         expr     min       lq    mean  median       uq      max neval
+##  my_apply(X) 132.614 134.9475 159.155 140.348 142.9705 2019.727   100
+```
+
+```r
+microbenchmark(my_colsums(X))
+```
+
+```
+## Unit: microseconds
+##           expr   min     lq    mean median     uq    max neval
+##  my_colsums(X) 7.638 7.7865 8.80987 7.8685 7.9725 75.624   100
+```
+
+---
+# Summary
+
+* When applicable, vectorization tends to be much faster than for loops
+
+* However, some care must be taken in correctly implementing the vectorized code
+
+* Loops may make more sense when
+    + using functions that do not take vectors as input
+    + computations where one iteration depends on previous iterations
+    
+* Vectorization and good code design and save you lots of time in the long run, and 
+gets much easier with practice.
+
+
+---
+# Summary
+
+There is a nice R-bloggers post on [Strategies to Speedup R Code](https://www.r-bloggers.com/strategies-to-speedup-r-code/), 
+which includes many plots show relative speedups for different 
+strategies.
+
+&lt;img src="Figures/raw_vs_with_vectorization.png" alt="vectorization" style="width: 600px;"/&gt;
+
+
+---
+# Language Speed Comparisons
+
+&lt;img src="Figures/julia_benchmarks.png" alt="Language Comparisons" style="width: 700px;"/&gt;
+
+
+---
+# Analysing Climate Data
+
+* Download climate data *GlobalLandTemperaturesByCountry.csv*, which consists of temperature readings over time by country.
+
+* Download climate data *GlobalLandTemperaturesByCity.csv*, which consists of temperature readings over time by city.
+
+* These data sets were produced by [Berkeley Earth](www.berkelyearth.org), and are also available on [Kaggle](https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data).
+
+
+```r
+# Get Climate Data
+country &lt;- read.csv("Data/GlobalLandTemperaturesByCountry.csv")
+```
+
+---
+# Analysing Country Temperature Data
+
+```r
+head(country, 3)
+```
+
+```
+##           dt AverageTemperature AverageTemperatureUncertainty Country
+## 1 1743-11-01              4.384                         2.294   Åland
+## 2 1743-12-01                 NA                            NA   Åland
+## 3 1744-01-01                 NA                            NA   Åland
+```
+
+
+---
+# Analysing country Temperature Data
+
+```r
+tail(country, 3)
+```
+
+```
+##                dt AverageTemperature AverageTemperatureUncertainty
+## 577460 2013-07-01             17.000                         0.453
+## 577461 2013-08-01             19.759                         0.717
+## 577462 2013-09-01                 NA                            NA
+##         Country
+## 577460 Zimbabwe
+## 577461 Zimbabwe
+## 577462 Zimbabwe
+```
+
+---
+# Analysing country Temperature Data
+
+* &lt;code&gt;mutate&lt;/code&gt; can be used to add new variables (columns) to a data frame 
+by transforming existing variables
+
+* Example syntax: &lt;code&gt;mutate(data, new.var = f(old.var))&lt;/code&gt;
+
+
+```r
+country &lt;- mutate(country, date = as.Date(dt))
+```
+
+---
+# Analysing Temperature Data
+
+```r
+country &lt;- mutate(country, Temp_zscore = scale(AverageTemperature)[, 1])
+
+ggplot(country, aes(Temp_zscore, fill=1)) + 
+    geom_density(alpha=0.4)
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-42-1.png" width="672" /&gt;
+
+---
+# Analysing Temperature Data
+
+```r
+country &lt;- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %&gt;%
+    filter(Country == "Germany") %&gt;%
+    mutate(date = as.Date(dt))
+
+ggplot(country, aes(date, AverageTemperature)) +
+ geom_line()
+```
+
+```
+## Warning: Removed 1 rows containing missing values (geom_path).
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-43-1.png" width="672" /&gt;
+
+---
+# Analysing Temperature Data
+Dificult to see the patterns, need to smooth, what value to choose?
+
+
+```r
+# Now using %&gt;%
+k &lt;- ???
+country &lt;- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %&gt;%
+    filter(Country == "Germany") %&gt;%
+    mutate(date = as.Date(dt))
+
+ggplot(country, aes(date, SmoothedAvg)) +
+    geom_line()
+```
+
+---
+# Analysing Temperature Data
+Monthly data, so window size 12 seems to make sense.
+
+
+```r
+# Now using %&gt;%
+k &lt;- 12
+country &lt;- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %&gt;%
+    filter(Country == "Germany") %&gt;%
+    mutate(date = as.Date(dt)) %&gt;%
+    mutate(SmoothedAvg = stats::filter(AverageTemperature,
+                                       rep(1/k, k), sides=2))
+
+ggplot(country, aes(date, SmoothedAvg)) +
+    geom_line()
+```
+
+```
+## Don't know how to automatically pick scale for object of type ts. Defaulting to continuous.
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-45-1.png" width="672" /&gt;
+
+---
+# Analysing Temperature Data
+Let's try 120 (10 years) as well.
+
+
+```r
+# Now using %&gt;%
+k &lt;- 120
+country &lt;- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %&gt;%
+    filter(Country == "Germany") %&gt;%
+    mutate(date = as.Date(dt)) %&gt;%
+    mutate(SmoothedAvg = stats::filter(AverageTemperature,
+                                       rep(1/k, k), sides=2))
+
+ggplot(country, aes(date, SmoothedAvg)) +
+    geom_line()
+```
+
+```
+## Don't know how to automatically pick scale for object of type ts. Defaulting to continuous.
+```
+
+&lt;img src="Topics_In_R_DPluta_files/figure-html/unnamed-chunk-46-1.png" width="672" /&gt;
+
+---
+# Temperature Data Exercises
+
+1. Find the mean temperature for each country and print the data frame with countries 
+ordered from hottest to coolest (use &lt;code&gt;arrange&lt;/code&gt;).
+
+2. Plot the temperature time series for a few different countries.  Compare different countries
+that you think might be interesting, e.g. very populated vs sparsely populated countries, 
+or by latitude and longitude.
+
+
+
+```r
+city &lt;- read.csv("Data/GlobalLandTemperaturesByCity.csv")
+head(city)
+city %&gt;% group_by(city) %&gt;% summarise(mean(AverageTemperature, na.rm=TRUE))
+```
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github"
+});</script>
+
+  </body>
+</html>
