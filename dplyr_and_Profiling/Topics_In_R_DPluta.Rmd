@@ -3,6 +3,7 @@ title: "Topics in R Workshop"
 subtitle: "UCI Data Science Initiative"
 author: "Dustin Pluta"
 date: "2 Dec 2016"
+email: "dpluta@uci.edu"
 output:
   xaringan::moon_reader:
     seal: yes
@@ -11,10 +12,27 @@ output:
       highlightStyle: github
 ---
 
+![](Figures/UCI_logo.png)
+
+![](Figures/dsi_logo.png)
+
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 ```
 
+```{r, include=FALSE}
+library(knitr)
+opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+---
+# Topics in R: Afternoon Schedule
+
+12:45 - 2:30pm: <code>dplyr</code>
+
+2:40 - 3:50pm: Profiling and vectorisation
+
+![](Figures/kiwi.jpg)
 
 ---
 # Required Packages
@@ -25,10 +43,11 @@ install.packages('ggplot2')
 install.packages('dplyr')
 install.packages('broom')
 install.packages('microbenchmark')
+install.packages('devtools')
 devtools::install_github('hadley/lineprof')
 ```
 
-```{r, results='hide', warning=FALSE, message=FALSE}
+```{r, results='hide'}
 library(ggplot2)
 library(dplyr)
 library(broom)
@@ -46,7 +65,7 @@ library(lineprof)
 
 --
 
-2. Examples with %>%
+2. Examples with <code>%>%</code>
 
 --
 
@@ -65,13 +84,19 @@ library(lineprof)
 
 # Some Resources for R
 
+* [<code>dplyr</code> and Data Wrangling Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+* [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
 * [Data Carpentry Lessons for R](http://www.datacarpentry.org/R-ecology-lesson/)
 
-* [dplyr Tutorial](http://genomicsclass.github.io/book/pages/dplyr_tutorial.html)
+* [<code>dplyr</code> Tutorial](http://genomicsclass.github.io/book/pages/dplyr_tutorial.html)
 
 * [Advanced R](http://adv-r.had.co.nz/)
 
 * [R for Data Science](http://r4ds.had.co.nz/)
+
+* [Coursera Data Science Specialization](https://www.coursera.org/specializations/jhu-data-science)
 
 ---
 
@@ -92,19 +117,25 @@ library(lineprof)
     + <code>tidyr </code>
 
     + many others
+    
+* **Note** Because Dr. Wickham is from New Zealand, we will be strictly using 
+New Zealand spellings (colour, summarise, vectorisation, etc.) here.
+
 
 ---
 # Key Functions
-
-* <code> mutate</code>: transform variables in a data set
 
 * <code> filter</code>: select subset of rows (observations)
 
 * <code> select</code>: select subset of columns (variables)
 
+* <code> mutate</code>: transform variables in a data set
+
 * <code> arrange</code>: reorder rows
 
 * <code> summarise</code>: collapses a data frame into a single row
+
+* <code>group_by</code>
 
 ![](Figures/iris.png)
 
@@ -112,12 +143,13 @@ library(lineprof)
 # Simple <code>dplyr</code> Examples
 * Let's try some <code>dplyr</code> functions with the <code>iris</code> data set:
 ```{r}
+# Manipulate the data.frame iris and print species means of Sepal Width
 data(iris)
 iris <-  filter(iris, Species!="setosa")
 iris <- select(iris, c(Sepal.Width, Species)) 
 iris <- group_by(iris, Species)
-iris <- summarise(iris, mean(Sepal.Width))
-print(iris)
+species_means <- summarise(iris, mean(Sepal.Width))
+print(species_means)
 ```
 
 * Note that each function has the form <code>f(data, ...)</code>: first 
@@ -134,12 +166,23 @@ the pipe operator <code>%>%</code>
 * The pipe operator <code>%>%</code> allows you to chain operations on a data set together 
 without having to create specific intermediate objects
 
-* When using %>%, the first argument to a function is taken as the output of the previous step in the chain
+* When using <code>%>%</code>, the first argument to a function is taken as the output of the previous step in the chain
 
 * For example, the following is equivalent to the previous code:
 ```{r}
+# Prints species means, does not save anything
+# Original data.frame iris is unaffected
 data(iris)
 iris %>% filter(Species!="setosa") %>%
+    select(c(Sepal.Width, Species)) %>% 
+    group_by(Species) %>%
+    summarise(mean(Sepal.Width))
+```
+
+```{r, eval=FALSE}
+# To save the results instead
+species_means <- iris %>% 
+    filter(Species!="setosa") %>%
     select(c(Sepal.Width, Species)) %>% 
     group_by(Species) %>%
     summarise(mean(Sepal.Width))
@@ -150,9 +193,9 @@ iris %>% filter(Species!="setosa") %>%
 
 1. Use <code>dplyr</code> to calculate the mean Sepal Width of the virginica species.
 
-2. <code>summarise</code> can summarise multiple variables simultaneously, apply a 
-different function to each variable.  
-Adapt the following code to find the minimum, median, 
+2. <code>summarise</code> can summarise multiple variables simultaneously, applying a (possibly different) 
+function to each variable.  
+Adapt the code below to find the minimum, median, 
 maximum, and standard deviation of the Sepal.Width for the virginica species.
 
 3. <code>group_by()</code> makes <code>summarise</code> even more useful by allowing you 
@@ -167,13 +210,65 @@ iris %>% summarise(mean_sepal_width = mean(Sepal.Width),
                    min_sepal_width = min(Sepal.Width))
 ```
 
+---
+# <code>dplyr</code> Exercises
+*Solution*
+* 1. Use <code>dplyr</code> to calculate the mean Sepal Width of the virginica species.
+
+```{r}
+data(iris)
+
+iris %>% 
+    filter(Species == "virginica") %>%
+    summarise(mean_sepal_width = mean(Sepal.Width))
+```
+
+
+---
+# <code>dplyr</code> Exercises
+*Solution*
+
+* 2. <code>summarise</code> can summarise multiple variables simultaneously, applying a (possibly different) 
+function to each variable.  
+Adapt the code below to find the minimum, median, 
+maximum, and standard deviation of the Sepal.Width for the virginica species.
+
+
+```{r}
+data(iris)
+iris %>% 
+    filter(Species == "virginica") %>%
+    summarise(min_sepal_width = min(Sepal.Width),
+              med = median(Sepal.Width), maximum = max(Sepal.Width),
+              stdev = sd(Sepal.Width))
+```
+
+
+---
+# <code>dplyr</code> Exercises
+*Solution*
+
+* 3. <code>group_by()</code> makes <code>summarise</code> even more useful by allowing you 
+to summarise values across groups of a category simultaneously.  
+Using <code>group_by</code>, adapt your code from the previous problem to produce the summary values for each species.
+
+
+```{r}
+data(iris)
+iris %>% 
+    group_by(Species) %>%
+    summarise(min_sepal_width = min(Sepal.Width),
+              med = median(Sepal.Width), maximum = max(Sepal.Width),
+              stdev = sd(Sepal.Width))
+```
+
 
 ---
 class: center, middle
 # Performant Code
 
 >“We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%. A good programmer will not be lulled into complacency by such reasoning, he will be wise to look carefully at the critical code; but only after that code has been identified.”
-Donald Knuth.
+~ Donald Knuth.
 
 ![](Figures/young-donald-knuth.jpg)
 
@@ -183,12 +278,12 @@ Donald Knuth.
 
 * When writing code, there are many different resources to consider:
     + Speed
-    + Memory
+    + Memory Usage
     + Developer Time
-    + Reusability
+    + Code Reusability
 
-* We want to make the data analysis process easy, convenient, and reliable, not to 
-write the fastest code possible.
+* We generally want to make the data analysis process easy, convenient, and reliable, 
+it's rarely necessary to write the fastest code possible.
 
 * Goal: learn easy methods and tools to reduce the time and burden of programming 
 for data analysis.
@@ -209,7 +304,7 @@ for data analysis.
     + StackOverflow
 3. Vectorise.
     + <code> apply, lapply </code>
-    + Specialized functions, e.g. <code>colSums, rowSums
+    + Specialized functions, e.g. <code>colSums, rowSums</code>
 4. Parallelise.
 5. Avoid copying code uncessarily; avoid superfluous copies of data and variables.
 6. Byte-code compile.
@@ -278,13 +373,17 @@ ggplot(iris, aes(Sepal.Length, fill=Species)) +
 # Vectorisation: Iris Example
 **Part B**
 
-Suppose we want to print the lower and upper 95\% bootstrap estimates, along with the sample median Sepal Length.  Clean up and rewrite the following bootstrap code using vectorisation and <code>dplyr</code> functions. (Hint: the <code>boostrap()</code> 
-function from <code>broom</code> makes bootstrap sampling easy.)
+* Suppose we want to print the lower and upper 95\% bootstrap estimates, along with the sample median Sepal Length.  
+
+    + Clean up and rewrite the following bootstrap code using vectorisation and <code>dplyr</code> functions. 
+    
+    (Hint: the <code>boostrap()</code> function from <code>broom</code> makes bootstrap sampling easy.)
 
 ---
 # Vectorisation: Iris Example
 **Part B**
 
+Modify this code using <code>dplyr</code> functions.
 ```{r, eval=FALSE}
 data(iris)
 set.seed(1234)
@@ -325,12 +424,11 @@ boot_medians <- c()
 
 boot_samples <- bootstrap(setosa, B)
 
+
+
 boot_median_est <- mean(boot_medians)
 boot_lower <- boot_medians[order(boot_medians)][round(0.025*B)]
 boot_upper <- boot_medians[order(boot_medians)][round(0.975*B)]
-cat("Est Median Sepal Length: ", boot_median_est, "\n", 
-    "95% Bootstrap CI for Median Sepal Length: (", 
-    boot_lower, ",", boot_upper, ")\n")
 ```
 
 ---
@@ -414,6 +512,52 @@ boot_medians <- iris %>%
     bootstrap(B) %>% 
     do(tidy(median(.$Sepal.Length)))
 boot_bounds <- quantile(boot_medians$x, probs=c(0.025, 0.975))
+```
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+Compare back to what we started with.
+```{r, eval=FALSE}
+data(iris)
+set.seed(1234)
+B <- 1000 # Number of bootstrap samples
+n <- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+setosa <- subset(iris, Species == "setosa")
+boot_samples <- matrix(nrow=B, ncol=n)
+boot_medians <- c()
+for (b in 1:B) {
+    boot_samples[b, ] <- sample_n(setosa, n, replace=TRUE)[, "Sepal.Length"] 
+    boot_medians[b] <- median(boot_samples[b, ])
+}
+
+boot_median_est <- mean(boot_medians)
+boot_lower <- boot_medians[order(boot_medians)][round(0.025*B)]
+boot_upper <- boot_medians[order(boot_medians)][round(0.975*B)]
+```
+
+---
+# Vectorisation: Iris Example
+**Part B**
+*Solution*
+
+<code>dplyr</code> version again, now with printing for results.
+```{r}
+data(iris)
+set.seed(1234)
+B <- 1000 # Number of bootstrap samples
+n <- 50 # There's 50 of each species in the data set
+
+# This code calculates bootstrap samples for just "setosa"
+boot_medians <- iris %>% 
+    filter(Species == "setosa") %>%
+    bootstrap(B) %>% 
+    do(tidy(median(.$Sepal.Length)))
+boot_bounds <- quantile(boot_medians$x, probs=c(0.025, 0.975))
 
 cat("Est Median Sepal Length: ", mean(boot_medians$x), "\n", 
     "95% Bootstrap CI for Median Sepal Length: (", 
@@ -430,6 +574,8 @@ ggplot(boot_medians, aes(x)) +
     geom_histogram(binwidth=0.05)
 ```
 
+*End iris example*
+
 ---
 # Profiling
 
@@ -437,7 +583,7 @@ ggplot(boot_medians, aes(x)) +
 
 Here is an example on a simple function, from [Advanced R](adv-r/had/co.nz/Profiling.html)
 
-```{r, eval=FALSE}
+```{r}
 library(lineprof)
 f <- function() {
   pause(0.1)
@@ -453,6 +599,7 @@ h <- function() {
 }
 
 L <- lineprof(f())
+L
 ```
 
 ---
@@ -471,6 +618,7 @@ beta <- c(1, 0, 2, -3, 4)
 X <- as.matrix(rnorm(N*length(beta), 10, 1), nrow=N)
 Y <- X%*%beta + rnorm(N, 0, 2)
 L <- lineprof(lm(Y ~ X))
+L
 ```
 
 ---
@@ -491,7 +639,7 @@ microbenchmark(lm(Y ~ X))
 ---
 # Profiling: Vectorisation
 
-Let's compare the speeds of for loops and the equivalent vectorisations.
+Let's compare the speeds of for-loops and the equivalent vectorisations.
 
 ```{r}
 set.seed(1234)
@@ -544,7 +692,26 @@ microbenchmark(a%*%b)
 ---
 # Profiling: Vector Sum Example
 
-Let's compare summing a vector with <code>sum</code> vs a for loop.
+* Let's compare summing a vector with a for-loop vs using <code>sum</code>.
+
+* Write two functions to return the sum of all entries of an input vector *x*: 
+    
+    + <code>loop_sum(x)</code> using a for-loop
+    
+    + <code>vect_sum(x)</code> using vectorisation (i.e., with <code>sum()</code>)
+
+
+---
+# Profiling: Vector Sum Example
+*Solution*
+
+* Let's compare summing a vector with <code>sum</code> vs a for-loop.
+
+* Write two functions to return the sum of all entries of an input vector *x*: 
+   
+    + <code>loop_sum(x)</code> using a for-loop
+   
+    + <code>vect_sum(x)</code> using vectorised functions (Hint: <code>sum</code>)
 
 ```{r}
 loop_sum <- function(x) {
@@ -582,6 +749,11 @@ data(iris)
 microbenchmark(aggregate(Sepal.Length ~ Species, data=iris, FUN=mean))
 
 microbenchmark(iris %>% 
+                   group_by(Species) %>% 
+                   summarise(mean(Sepal.Length)))
+
+microbenchmark(iris %>% 
+                   select(Sepal.Length, Species) %>%
                    group_by(Species) %>% 
                    summarise(mean(Sepal.Length)))
 ```
@@ -657,28 +829,6 @@ microbenchmark(iris_loop(300))
 microbenchmark(iris_vect(300))
 ```
 
-```{r}
-lineprof(iris_loop(2000))
-lineprof(iris_vect(2000))
-```
-
-
----
-# Profiling: Iris Example
-
-Now for the <code>dplyr</code> version.
-```{r}
-set.seed(1234)
-iris_vect <- function(B, n=50, species="setosa") {
-    boot_medians <- iris %>% 
-        filter(Species == species) %>%
-        bootstrap(B) %>%
-        do(tidy(median(.$Sepal.Length)))
-    boot_bounds <- quantile(boot_medians$x, probs=c(0.025, 0.975))
-    return(c(mean(boot_medians$x), boot_bounds))
-}
-iris_vect(50)
-```
 
 ---
 # Profiling: Iris Example
@@ -686,15 +836,9 @@ iris_vect(50)
 Comparing the two versions for the bootstrap iris estimates.
 
 ```{r}
-microbenchmark(iris_loop(100))
-microbenchmark(iris_vect(100))
+lineprof(iris_loop(2000))
+lineprof(iris_vect(2000))
 ```
-
-```{r}
-lineprof(iris_loop(3000))
-lineprof(iris_vect(3000))
-```
-
 
 ---
 # Profiling Exercise
@@ -702,11 +846,14 @@ lineprof(iris_vect(3000))
 1. Suppose we want to find the column sums of the numeric variables in the <code>iris</code> data set.  
 Use <code>microbenchmark</code> to compare the speed of three methods for computing 
 the column sums:
+    
     + double for-loop over columns and rows
+    
     + <code>apply</code> and <code>sum</code>
+    
     + <code>colSums</code>
     
-2. Simulate a random large matrix (say 100 x 100 or more), and benchmark the different column 
+2. Simulate a random matrix (say 100 x 100 or more), and benchmark the different column 
 sum methods.
 
 ---
@@ -739,6 +886,7 @@ my_colsums <- function(dat)
 ---
 # Profiling Exercise
 *Solution*
+
 ```{r}
 microbenchmark(loop(iris[, -5]))
 microbenchmark(my_apply(iris[, -5]))
@@ -747,6 +895,7 @@ microbenchmark(my_colsums(iris[, -5]))
 
 ---
 # Profiling Exercise
+*Solution*
 
 ```{r}
 set.seed(1234)
@@ -762,23 +911,25 @@ microbenchmark(my_colsums(X))
 ---
 # Summary
 
-* When applicable, vectorization tends to be much faster than for loops
+* Vectorization and good code design and save you lots of time in the long run, and 
+gets much easier with practice.
+
+* When applicable, vectorization tends to be much faster than for-loops
 
 * However, some care must be taken in correctly implementing the vectorized code
 
 * Loops may make more sense when
     + using functions that do not take vectors as input
     + computations where one iteration depends on previous iterations
-    
-* Vectorization and good code design and save you lots of time in the long run, and 
-gets much easier with practice.
 
+* If you can't use built-in vertorised functions and have to use a loop, 
+the package <code>Rcpp</code> can be used to write fast for-loops in C++.
 
 ---
 # Summary
 
-There is a nice R-bloggers post on [Strategies to Speedup R Code](https://www.r-bloggers.com/strategies-to-speedup-r-code/), 
-which includes many plots show relative speedups for different 
+* There is a nice R-bloggers post on [Strategies to Speedup R Code](https://www.r-bloggers.com/strategies-to-speedup-r-code/), 
+which includes many plots showing relative speedups for different 
 strategies.
 
 <img src="Figures/raw_vs_with_vectorization.png" alt="vectorization" style="width: 600px;"/>
@@ -786,12 +937,21 @@ strategies.
 
 ---
 # Language Speed Comparisons
+* For situations where speed and efficiency is critical, you will likely need to 
+resort to other languages:
 
 <img src="Figures/julia_benchmarks.png" alt="Language Comparisons" style="width: 700px;"/>
 
 
 ---
 # Analysing Climate Data
+
+* Let's apply some of the ideas we've seen to more complicated real-world data sets.
+
+* This is a more open-ended section, to give you an opportunity to explore and practice 
+using <code>dplyr</code>, vectorisation, and profiling.
+
+* Download climate data *GlobalTemperatures.csv*, which consists of temperature readings globally over time.
 
 * Download climate data *GlobalLandTemperaturesByCountry.csv*, which consists of temperature readings over time by country.
 
@@ -827,11 +987,12 @@ by transforming existing variables
 
 ```{r}
 country <- mutate(country, date = as.Date(dt))
+head(country, 3)
 ```
 
 ---
 # Analysing Temperature Data
-```{r, warning=FALSE, fig.height=2.4}
+```{r, warning=FALSE, fig.height=4}
 country <- mutate(country, Temp_zscore = scale(AverageTemperature)[, 1])
 
 ggplot(country, aes(Temp_zscore, fill=1)) + 
@@ -840,7 +1001,8 @@ ggplot(country, aes(Temp_zscore, fill=1)) +
 
 ---
 # Analysing Temperature Data
-```{r, fig.height=4}
+Plot average temperatures for Germany over time.
+```{r, warning=FALSE, fig.height=2.3}
 country <- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %>%
     filter(Country == "Germany") %>%
     mutate(date = as.Date(dt))
@@ -868,7 +1030,7 @@ ggplot(country, aes(date, SmoothedAvg)) +
 # Analysing Temperature Data
 Monthly data, so window size 12 seems to make sense.
 
-```{r, fig.height=2.3, warning=FALSE}
+```{r, fig.height=2.3, warning=FALSE, message=FALSE}
 # Now using %>%
 k <- 12
 country <- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %>%
@@ -885,7 +1047,7 @@ ggplot(country, aes(date, SmoothedAvg)) +
 # Analysing Temperature Data
 Let's try 120 (10 years) as well.
 
-```{r, fig.height=2.3, warning=FALSE}
+```{r, fig.height=2.3}
 # Now using %>%
 k <- 120
 country <- read.csv("Data/GlobalLandTemperaturesByCountry.csv") %>%
@@ -914,10 +1076,32 @@ city <- read.csv("Data/GlobalLandTemperaturesByCity.csv")
 head(city)
 city %>% group_by(city) %>% summarise(mean(AverageTemperature, na.rm=TRUE))
 ```
+
+
+---
+# References and Resources
+
+* [Why Vectorise?](http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html)
+* [Writing Better Statistical Programs in R](http://www.johnmyleswhite.com/notebook/2013/01/24/writing-better-statistical-programs-in-r/)
+* [Advanced R](http://adv-r.had.co.nz/)
+* [RStudio Data Wrangling Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+* [<code>magrittr</code> Vignette](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html)
+* [Kaggle Climate Change Data](https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data)
+* [<code>dplyr</code> Tutorial](http://genomicsclass.github.io/book/pages/dplyr_tutorial.html)
+* [<code>dplyr</code> Introduction Vignette](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
+* [Evaluating the Design of R](http://r.cs.purdue.edu/pub/ecoop12.pdf)
+* [Vectorisation for Simulations](https://www.r-bloggers.com/how-to-use-vectorization-to-streamline-simulations/)
+* [Bootstrapping with <code>broom</code>](https://cran.r-project.org/web/packages/broom/vignettes/bootstrapping.html)
+* [R Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+* [Strategies to Speedup R](https://www.r-bloggers.com/strategies-to-speedup-r-code/)
+
+
 ---
 
 class: center, middle
 
 # Thanks!
+
+![](Figures/data_blob.png)
 
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
