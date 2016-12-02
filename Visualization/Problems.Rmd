@@ -1,0 +1,67 @@
+---
+title: "Final Problems"
+author: "Lingge Li"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(alr4)
+```
+
+## Week 7
+
+Heights of 16 Gothic cathedrals are listed below.
+
+```{r echo=FALSE, eval=TRUE, warning=FALSE}
+cathedral[cathedral$Type=='Gothic', 1:2]
+```
+
+1. Calculate the sample mean and standard deviation. Then sketch the sampling distribution of the mean.
+
+2. Construct a 95\% confidence interval of the mean.
+
+3. Interpret the confidence interval in the context of the problem.
+
+Source: S. Weisberg 2014 Applied Linear Regression
+
+## Week 8
+
+Two experiments were performed to test if manipulating the air conditioning fans in the Minneapolis metrodome can effect the distance travelled by a baseball in 2003. The summary of travel distances is given below. 
+
+**Headwind** mean 356.7 standard deviation 8.4 $n=17$
+
+**Tailwind** mean 350.8 standard deviation 10.3 $n=17$
+
+1. Write the null hypothesis and alternative hypothesis.
+
+2. State the appropriate test and perform it.
+
+2. Do baseballs travel farther in tailwind condition than in headwind condition? Justify.
+
+Source: http://finzi.psych.upenn.edu/library/alr3/html/domedata.html
+
+## Week 9
+
+Ratings of 364 professors (from 1 to 5) at one large campus in the Midwest were collected in 2011 from Humanities, Social Sciences, STEM and Professional disciplines. We are interested to know whether the professor ratings differ across disciplines.
+
+1. Write the null hypothesis and alternative hypothesis.
+
+2. Based on the ANOVA table, state the test result.
+
+```{r echo=FALSE, eval=TRUE}
+fit <- lm(quality~discipline, data=Rateprof)
+anova(fit)
+```
+
+3. Interpret the result in the context of the problem.
+
+```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=3}
+qplot(discipline, quality, data=Rateprof, geom='boxplot')
+```
+
+4. Is the result consistent with the side-by-side boxplot? Explain.
+
+Source: http://pareonline.net/getvn.asp?v=16&n=18
+
