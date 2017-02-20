@@ -1,0 +1,276 @@
+---
+title: "Introduction to Shiny"
+author: "Lingge Li"
+date: "2/21/2016"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is Shiny
+
+- A framework for building web applications
+
+- Best for interactive data visualization
+
+- Apps for exploratory analysis
+
+http://shiny.datascience.uci.edu/UCIDataScienceInitiative/ClimateActionShiny/
+
+http://shiny.datascience.uci.edu/uciMetropolitanFutures/employment_centers/
+
+## Server and UI
+
+- ui.R has everything you see
+
+input widgets, plots, tables...
+
+- server.R does the work
+
+```{r echo=TRUE, eval=FALSE}
+shinyServer(function(input, output) {
+  
+})
+
+shinyUI(fluidPage(
+  
+))
+```
+
+## Input
+
+- Input handled by specific widgets
+
+- Each input has an id
+
+- Access input value with input$id
+
+http://shiny.rstudio.com/gallery/widget-gallery.html
+
+## Output
+
+- Output rendered in server with output$id
+
+- Then displayed in ui
+
+```{r echo=TRUE, eval=FALSE}
+library(shiny)
+shinyServer(function(input, output) {
+  output$histogram <- renderPlot({
+    hist(faithful$eruptions)
+  })
+})
+
+shinyUI(fluidPage(
+  plotOutput(outputId='histogram')
+))
+```
+
+## Several types of output
+
+- plotOutput (imageOutput)
+- tableOutput (dataTableOutput)
+- textOutput (html)
+- verbatimTextOutput (console)
+- htmlOutput (uiOutput)
+
+## Datatable
+
+- Javascript table
+
+\includegraphics[width=300pt]{table.png}
+
+http://shiny.rstudio.com/gallery/datatables-options.html
+
+## MathJax
+
+- Javascript for displaying LaTex
+
+- Pass xtable output as raw html
+
+```{r echo=TRUE, eval=FALSE}
+output$table <- renderUI({
+    M <- print(xtable(M, align=rep("c", ncol(M)+1)), 
+               floating=FALSE, tabular.environment="array", 
+               comment=FALSE, print.results=FALSE)
+    html <- paste0("$$", M, "$$")
+    list(withMathJax(), HTML(html))
+})
+
+withMathJax(),
+uiOutput('table')
+```
+
+http://shiny.rstudio.com/gallery/mathjax.html
+
+## Reactive environment
+
+- Triggered when input changes
+
+- Output changes accordingly
+
+- Rendering functions reactive
+
+## Example
+
+```{r echo=TRUE, eval=FALSE}
+library(shiny)
+library(ggplot2)
+
+shinyServer(function(input, output) {
+  # read dataset
+  imdb <- read.csv("~/Downloads/movie_metadata.csv")
+  # subset nicolas cage movies
+  cage <- imdb[imdb$actor_1_name == 'Nicolas Cage', ]
+  cage$actor_1_name <- as.character(cage$actor_1_name)
+  # create plot
+  output$movies <- renderPlot({
+    ggplot(data=cage, aes(x=title_year, y=imdb_score, label=movie_title)) +
+      geom_point(alpha=0.5) + 
+      geom_text(fontface='italic', size=6, vjust=1, nudge_y=0.1) + 
+      labs(x='Year', y='IMDB Score') +
+      geom_smooth()
+  })
+})
+```
+
+## Example
+
+```{r echo=TRUE, eval=FALSE}
+shinyUI(fluidPage(
+  plotOutput(outputId='movies')
+))
+```
+
+## Add widget
+
+```{r echo=TRUE, eval=FALSE}
+shinyUI(fluidPage(
+  plotOutput(outputId='movies'),
+  selectInput('color', label='Color', 
+              choices=list('black', 'red', 'blue'), 
+              selected='black')
+))
+```
+
+## Change color
+
+- Set colour to input$color
+
+```{r echo=TRUE, eval=FALSE}
+output$movies <- renderPlot({
+  ggplot(data=cage, aes(x=title_year, y=imdb_score, label=movie_title)) +
+    geom_point(alpha=0.5, colour=input$color) + 
+    geom_text(fontface='italic', size=6, vjust=1, nudge_y=0.1, colour=input$color) + 
+    labs(x='Year', y='IMDB Score') +
+    geom_smooth()
+})
+```
+
+## Slider
+
+```{r echo=TRUE, eval=FALSE}
+shinyUI(fluidPage(
+  plotOutput(outputId='movies'),
+  selectInput('color', label='Color', 
+              choices=list('black', 'red', 'blue'), 
+              selected='black'),
+  sliderInput('year', label="Year", 
+              min=1980, max=2016, value=c(1980, 2016))
+))
+```
+
+## Filter by input$year
+
+```{r echo=TRUE, eval=FALSE}
+output$movies <- renderPlot({
+  temp <- cage[cage$title_year >= input$year[1] & cage$title_year <= input$year[2], ]
+  ggplot(data=temp, aes(x=title_year, y=imdb_score, label=movie_title)) +
+    geom_point(alpha=0.5, colour=input$color) + 
+    geom_text(fontface='italic', size=6, vjust=1, nudge_y=0.1, colour=input$color) + 
+    labs(x='Year', y='IMDB Score') +
+    geom_smooth()
+})
+```
+
+## Layout
+
+- Fluid grid layout (similar to bootstrap)
+
+- 12 columns every row
+
+- Tabset
+
+\includegraphics[width=300pt]{grid.png}
+
+## Rows and columns
+
+```{r echo=TRUE, eval=FALSE}
+shinyUI(fluidPage(
+  fluidRow(align='center',
+    plotOutput(outputId='movies')
+  ),
+  fluidRow(
+    column(3, offset=1,
+           selectInput('color', label='Color', 
+                       choices=list('black', 'red', 'blue'), 
+                       selected='black')),
+    column(4,
+           sliderInput('year', label="Year", 
+                       min=1980, max=2016, value=c(1980, 2016)))
+    )
+))
+```
+
+## Html
+
+- Customize html and css style files
+
+- Shiny themes
+
+\includegraphics[width=300pt]{theme.png}
+
+https://rstudio.github.io/shinythemes/
+
+## Interactive documents
+
+- Embed interactive plots in markdown
+
+```{r echo=TRUE, eval=FALSE}
+---
+title: "Nicolas Cage Movies"
+output: html_document
+runtime: shiny
+---
+```
+  
+http://rmarkdown.rstudio.com/authoring_shiny.html
+
+## Shiny server
+
+- Deploy apps to the interwebs
+
+- http://shiny.datascience.uci.edu/server/
+
+## Other packages
+
+- Widgets for Javascript data visualization
+
+http://www.htmlwidgets.org/
+
+## Resources
+
+- Tutorial
+
+http://shiny.rstudio.com/tutorial/
+
+- Cheatsheet
+
+http://shiny.rstudio.com/images/shiny-cheatsheet.pdf
+
+- Gallery with source code
+
+http://shiny.rstudio.com/gallery/
+
