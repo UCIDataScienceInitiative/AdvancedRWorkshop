@@ -1,0 +1,368 @@
+---
+title: "Introduction to ggplot"
+author: "Lingge Li"
+date: "2/21/2017"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Why ggplot
+
+- Beautiful aesthetics
+- Flexible and powerful
+
+```{r echo=FALSE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+library(ggplot2)
+ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
+  geom_violin(aes(fill=Species)) +
+  labs(title='Iris Petal Width')
+```
+
+
+## However...
+
+- Syntax slightly compilcated at first glance
+
+```{r echo=TRUE, eval=FALSE}
+ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
+  geom_violin(aes(fill=Species)) +
+  labs(title='Iris Petal Width')
+```
+
+## Layered grammar of graphics
+
+- ggplot2 follows a specific grammar of graphics
+
+\includegraphics[width=300pt]{layer.png}
+
+*Example taken from Hadley Wickham's book*
+
+http://vita.had.co.nz/papers/layered-grammar.pdf
+
+## How to make a plot
+
+- Geometric objects (geom)
+- Aesthetic mapping (aes)
+- Statistical transformation (stat)
+- Scales and coordinate system
+
+## Geoms
+
+- Wide range of geometric objects from points to complex shapes
+
+- geom_point, geom_line, geom_histogram, geom_boxplot...
+
+- Multiple geometric objects on the same plot with +
+
+
+## Aesthetics
+
+- Coordinate positions (always needed)
+
+- Colour, fill, shape, size...
+
+## Data + mapping
+
+- aes() maps a dataframe to geom
+
+- Each geom can have its own mapping
+
+```{r echo=TRUE, eval=FALSE}
+geom_point(data, aes(x, y))
+```
+
+## Scatterplot
+
+```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
+ggplot() + geom_point(data=iris, 
+             aes(x=Petal.Length, y=Petal.Width))
+```
+
+- The code below equivalent and more commonly seen
+
+```{r echo=TRUE, eval=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data=iris, aes(x=Petal.Length, y=Petal.Width)) +
+  geom_point()
+```
+
+## Colour and shape
+
+```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot() + 
+  geom_point(data=iris, aes(x=Petal.Length, y=Petal.Width, 
+                          colour=Species))
+```
+
+How would you change the shape?
+
+## Mapping vs setting
+
+- What is the key difference
+
+```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
+ggplot(data=iris, aes(x=Petal.Length, y=Petal.Width)) +
+  geom_point(colour='red')
+```
+
+## Stat
+
+- Draw a histogram the hard way
+
+```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
+x <- rnorm(500)
+temp <- as.data.frame(x)
+ggplot(temp, aes(x=x)) + 
+  geom_histogram(stat='bin', binwidth=0.1)
+```
+
+- Most plots do not require stat
+
+## Quick plot
+
+- qplot similar to base plot
+
+- http://docs.ggplot2.org/current/qplot.html
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, out.width='.45\\linewidth', fig.show='hold', fig.align='center'}
+x <- rnorm(500)
+qplot(x, geom='histogram', binwidth=0.1)
+qplot(x, geom='dotplot', binwidth=0.1)
+```
+
+## Fancy plots
+
+- Basic plots done fancily with ggplot
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, out.width='.45\\linewidth', fig.show='hold', fig.align='center'}
+ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
+  geom_violin(aes(fill=Species))
+
+ggplot(data=iris, aes(x=Petal.Width)) +
+  geom_density(aes(fill=Species))
+```
+
+## Violin plot with points
+
+- geom_violin + geom_point
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
+  geom_violin(aes(fill=Species)) + geom_point()
+```
+
+## Jitter
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
+  geom_violin(aes(fill=Species)) + 
+  geom_jitter(alpha=0.4)
+```
+
+## IMDB data
+
+- Dataset contains over 5000 movies and 28 variables from IMDB
+
+https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset
+
+```{r echo=TRUE, eval=TRUE}
+imdb <- read.csv("~/Downloads/movie_metadata.csv")
+colnames(imdb)[1:20]
+```
+
+## IMDB score vs log10(budget)
+
+```{r echo=TRUE, eval=TRUE}
+imdb <- imdb[!is.na(imdb$imdb_score) & !is.na(imdb$budget), ]
+```
+
+```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
+  geom_point(alpha=0.5, size=0.5)
+```
+
+## Add regression line
+
+```{r echo=TRUE, eval=TRUE}
+imdb$regression <- lm(imdb_score ~ log10(budget), data=imdb)$fitted.values
+```
+
+```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
+  geom_point(alpha=0.5, size=0.5) + geom_line(aes(y=regression), colour='red')
+```
+
+## geom_smooth
+
+- Kernel smoother
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
+  geom_point(alpha=0.5, size=0.5) + geom_smooth()
+```
+
+## Nicolas Cage Movies
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+cage <- imdb[imdb$actor_1_name == 'Nicolas Cage', ]
+cage$actor_1_name <- as.character(cage$actor_1_name)
+ggplot(data=cage, aes(x=title_year, y=imdb_score, label=movie_title)) +
+  geom_point(alpha=0.5) + 
+  geom_text(fontface='italic', size=2, vjust=1, nudge_y=0.1) + 
+  geom_smooth()
+```
+
+## Compare with Leonardo DiCaprio
+
+```{r echo=FALSE, eval=TRUE, fig.width=5, fig.height=3}
+dicaprio <- imdb[imdb$actor_1_name == 'Leonardo DiCaprio', ]
+dicaprio$actor_1_name <- as.character(dicaprio$actor_1_name)
+temp <- rbind(cage, dicaprio)
+ggplot(data=temp, aes(x=title_year, y=imdb_score, label=movie_title, colour=actor_1_name)) +
+  geom_point() + geom_text(fontface='italic', size=2, vjust=1, nudge_y=0.1) +
+  geom_smooth()
+```
+
+## Scale
+
+- Transform the scale instead of data
+
+- How is this different from before
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
+  scale_x_log10() +
+  geom_point(alpha=0.5, size=0.5) + geom_smooth()
+```
+
+## Custom tick marks and labels
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
+  geom_point(alpha=0.5, size=0.5) + geom_smooth() +
+  scale_x_continuous(breaks=c(1e6, 1e8), 
+                     labels=c('Low budget', 'Blockbuster'),
+                     trans='log10')
+```
+
+## Colour scale
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2, fig.align='center'}
+imdb <- imdb[!is.na(imdb$gross), ]
+ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
+  geom_point(aes(colour=gross), alpha=0.5, size=0.5) + 
+  scale_x_log10() +
+  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
+                         labels = c('2 million', '4 million', '6 million'),
+                         low = 'blue', high = 'red')
+```
+
+## Putting it together
+
+```{r echo=FALSE, eval=TRUE}
+ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
+  geom_point(aes(colour=gross), alpha=0.5) +
+  scale_x_continuous(breaks=c(1e6, 1e8), 
+                     labels=c('Low', 'Blockbuster'),
+                     trans='log10') +
+  geom_smooth() +
+  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
+                         labels = c('2 million', '4 million', '6 million'),
+                         low = 'blue', high = 'red') +
+  annotate('point', x=2e+08, y=8.3, colour='#D55E00', shape=16, size=4) +
+  annotate('text', x=2e+08, y=8.7, label='Toy Story 3', fontface='italic', size=6, angle=30) +
+  annotate('point', x=210000000, y=5.7, colour='#009E73', shape=17, size=4) +
+  annotate('text', x=210000000, y=5.3, label='Transformers 3', fontface='italic', size=6) +
+  theme_bw() +
+  labs(title='IMDB Movies', x='Budget', y='Rating') + 
+  theme(plot.title=element_text(size=rel(2), colour='blue')) +
+  theme(legend.position=c(0.2, 0.2))
+```
+
+## Details
+
+- Theme 
+
+- http://docs.ggplot2.org/current/theme.html
+
+```{r echo=TRUE, eval=FALSE}
+ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
+  geom_point(aes(colour=gross), alpha=0.5) +
+  scale_x_continuous(breaks=c(1e6, 1e8), 
+                     labels=c('Low', 'Blockbuster'),
+                     trans='log10') +
+  geom_smooth() +
+  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
+                         labels = c('2 million', '4 million', '6 million'),
+                         low = 'blue', high = 'red') +
+  annotate('point', x=2e+08, y=8.3, colour='#D55E00', shape=16, size=4) +
+  annotate('text', x=2e+08, y=8.7, label='Toy Story 3', fontface='italic', size=6, angle=30) +
+  annotate('point', x=210000000, y=5.7, colour='#009E73', shape=17, size=4) +
+  annotate('text', x=210000000, y=5.3, label='Transformers 3', fontface='italic', size=6) +
+  theme_bw() +
+  labs(title='IMDB Movies', x='Budget', y='Rating') + 
+  theme(plot.title=element_text(size=rel(2), colour='blue')) +
+  theme(legend.position=c(0.2, 0.2))
+```
+
+## Facet
+
+- Similar plots for different periods with facet
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2}
+imdb$period <- cut(imdb$title_year, breaks=quantile(imdb$title_year), 
+                   labels=c('Before 1999', '1999-2005', '2005-2010', '2010-2016'),
+                   include.lowest=TRUE)
+```
+
+```{r echo=TRUE, eval=FALSE}
+ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) + 
+  geom_point(aes(colour=gross), alpha=0.5, size=0.5) +
+  geom_smooth(method='lm') +
+  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
+                         labels = c('2 million', '4 million', '6 million'),
+                         low = 'blue', high = 'red') +
+  facet_wrap(~period)
+```
+
+## Facet
+
+```{r echo=FALSE, eval=TRUE}
+ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) + 
+  geom_point(aes(colour=gross), alpha=0.5, size=0.5) +
+  geom_smooth(method='lm') +
+  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
+                         labels = c('2 million', '4 million', '6 million'),
+                         low = 'blue', high = 'red') +
+  facet_wrap(~period)
+```
+
+## Multiple plots
+
+- Multiplot function 
+
+http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/  
+
+- gridExtra package 
+
+https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html
+
+## Resources
+
+- Documentation 
+
+http://docs.ggplot2.org/current/
+
+- Cheatsheet 
+
+https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+
+- R Cookbook 
+
+http://www.cookbook-r.com/Graphs/
+
+- Stackoverflow 
+
+http://stackoverflow.com/questions/tagged/ggplot2
