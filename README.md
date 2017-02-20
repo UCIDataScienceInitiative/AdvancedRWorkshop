@@ -6,4 +6,4 @@
 
   + Debugging in R
   
-  + ggplot, shiny
+  + ggplot, Shiny
