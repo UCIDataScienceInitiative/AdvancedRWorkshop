@@ -1,7 +1,7 @@
 ---
-title: "Introduction to ggplot"
+title: "Data Visualization with ggplot"
 author: "Lingge Li"
-date: "2/21/2017"
+date: "10/19/2018"
 output: beamer_presentation
 ---
 
@@ -15,10 +15,24 @@ knitr::opts_chunk$set(echo = FALSE)
 - Flexible and powerful
 
 ```{r echo=FALSE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+library(data.table)
 library(ggplot2)
-ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
-  geom_violin(aes(fill=Species)) +
-  labs(title='Iris Petal Width')
+library(gridExtra)
+library(ggthemes)
+
+url <-'https://raw.githubusercontent.com/collnell/burritos/master/sd_burritos.csv'
+burritos <- fread(url)
+
+burritos$Guac[is.na(burritos$Guac)] <- 0
+burritos$Guac <- ifelse(burritos$Guac == 1, 'Guac', 'No Guac')
+
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Guac)) + 
+  geom_smooth(aes(x=Salsa, y=Taste, color=Guac), 
+              method="loess") +
+  scale_colour_manual(values=c("darkgreen", "red")) +
+  ggtitle('What Makes A Burrito Taste Good') +
+  theme_economist()
 ```
 
 
@@ -27,9 +41,13 @@ ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
 - Syntax slightly compilcated at first glance
 
 ```{r echo=TRUE, eval=FALSE}
-ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
-  geom_violin(aes(fill=Species)) +
-  labs(title='Iris Petal Width')
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Guac)) + 
+  geom_smooth(aes(x=Salsa, y=Taste, color=Guac), 
+              method="loess") +
+  scale_colour_manual(values=c("darkgreen", "red")) +
+  ggtitle('What Makes A Burrito Taste Good') +
+  theme_economist()
 ```
 
 ## Layered grammar of graphics
@@ -57,6 +75,8 @@ http://vita.had.co.nz/papers/layered-grammar.pdf
 
 - Multiple geometric objects on the same plot with +
 
+- https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf
+
 
 ## Aesthetics
 
@@ -74,51 +94,67 @@ http://vita.had.co.nz/papers/layered-grammar.pdf
 geom_point(data, aes(x, y))
 ```
 
-## Scatterplot
-
-```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
-ggplot() + geom_point(data=iris, 
-             aes(x=Petal.Length, y=Petal.Width))
-```
-
-- The code below equivalent and more commonly seen
-
-```{r echo=TRUE, eval=FALSE, fig.width=4, fig.height=3, fig.align='center'}
-ggplot(data=iris, aes(x=Petal.Length, y=Petal.Width)) +
-  geom_point()
-```
-
-## Colour and shape
-
-```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot() + 
-  geom_point(data=iris, aes(x=Petal.Length, y=Petal.Width, 
-                          colour=Species))
-```
-
-How would you change the shape?
-
-## Mapping vs setting
-
-- What is the key difference
-
-```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
-ggplot(data=iris, aes(x=Petal.Length, y=Petal.Width)) +
-  geom_point(colour='red')
-```
 
 ## Stat
 
-- Draw a histogram the hard way
+- Plotting distributions needs statistical transformation (count for histogram)
 
-```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
-x <- rnorm(500)
-temp <- as.data.frame(x)
-ggplot(temp, aes(x=x)) + 
-  geom_histogram(stat='bin', binwidth=0.1)
+- Variables are often transformed to be meaningful (log for concentration)
+
+- Statistical models can highlight data patterns (regression line)
+
+
+## Scales and coordinate system
+
+- Axis ticks and labels can be customized
+
+- Color scale can also be modified
+
+- Polar coordinates are used for pie charts
+
+
+## Burritos 
+
+- Dataset of burritos in San Diego
+
+\includegraphics[width=300pt]{burritos.png}
+
+https://srcole.github.io/100burritos/
+
+
+## Read data
+
+```{r echo=TRUE, eval=FALSE}
+library(data.table)
+library(ggplot2)
+
+url <- "https://raw.githubusercontent.com/collnell/
+burritos/master/sd_burritos.csv"
+burritos <- fread(url)
 ```
 
-- Most plots do not require stat
+
+## Univariate plot for continuous variable
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(data=burritos) + 
+  geom_histogram(aes(x=Cost), bins=20)
+```
+
+geom_density
+
+
+## Univariate plot for discrete variable
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+burritos$Burrito <- factor(burritos$Burrito)
+#summary(burritos$Burrito)
+top.burritos <- c('al pastor', 'california', 'carne asada', 'carnitas', 'surf & turf')
+temp <- burritos[burritos$Burrito %in% top.burritos, ]
+
+ggplot() + geom_bar(data=temp, aes(x=Burrito))
+```
+
 
 ## Pie chart
 
@@ -126,12 +162,11 @@ ggplot(temp, aes(x=x)) +
 
 - Stacked bar chart in polar coordinates
 
-```{r echo=TRUE, eval=TRUE, fig.width=3, fig.height=2, fig.align='center'}
-ggplot(mtcars, aes(x=factor(1), fill=factor(cyl))) +
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(temp, aes(x=factor(1), fill=Burrito)) +
   geom_bar(width=1) + coord_polar(theta='y')
 ```
 
-http://docs.ggplot2.org/current/coord_polar.html
 
 ## Quick plot
 
@@ -141,236 +176,206 @@ http://docs.ggplot2.org/current/coord_polar.html
 
 ```{r echo=TRUE, eval=TRUE, warning=FALSE, out.width='.45\\linewidth', fig.show='hold', fig.align='center'}
 x <- rnorm(500)
-qplot(x, geom='histogram', binwidth=0.1)
-qplot(x, geom='dotplot', binwidth=0.1)
+qplot(burritos$Cost, geom='histogram')
 ```
 
-## Fancy plots
 
-- Basic plots done fancily with ggplot
+## Bivariate plot
 
-```{r echo=TRUE, eval=TRUE, warning=FALSE, out.width='.45\\linewidth', fig.show='hold', fig.align='center'}
-ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
-  geom_violin(aes(fill=Species))
-
-ggplot(data=iris, aes(x=Petal.Width)) +
-  geom_density(aes(fill=Species))
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot() + geom_violin(data=burritos, aes(x=Chips, y=Cost))
+#ggplot() + geom_boxplot(data=burritos, aes(x=Chips, y=Cost))
 ```
+
+
+## Mapping vs setting
+
+- What is the difference
+
+```{r echo=TRUE, eval=FALSE}
+ggplot() + 
+  geom_violin(data=burritos, aes(x=Chips, y=Cost), fill='red')
+ggplot() + 
+  geom_violin(data=burritos, aes(x=Chips, y=Cost, fill=Chips))
+```
+
+- Try this with histogram
+
 
 ## Violin plot with points
 
 - geom_violin + geom_point
 
-```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
-  geom_violin(aes(fill=Species)) + geom_point()
-```
-
-## Jitter
+- geom_jitter
 
 ```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=iris, aes(x=Species, y=Petal.Width)) +
-  geom_violin(aes(fill=Species)) + 
-  geom_jitter(alpha=0.4)
+ggplot(data=burritos) + geom_violin(aes(x=Chips, y=Cost, fill=Chips)) +
+  geom_point(aes(x=Chips, y=Cost))
 ```
 
-## IMDB data
 
-- Dataset contains over 5000 movies and 28 variables from IMDB
-
-https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset
-
-```{r echo=TRUE, eval=TRUE}
-imdb <- read.csv("~/Downloads/movie_metadata.csv")
-colnames(imdb)[1:20]
-```
-
-## IMDB score vs log10(budget)
-
-```{r echo=TRUE, eval=TRUE}
-imdb <- imdb[!is.na(imdb$imdb_score) & !is.na(imdb$budget), ]
-```
-
-```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
-  geom_point(alpha=0.5, size=0.5)
-```
-
-## Add regression line
-
-```{r echo=TRUE, eval=TRUE}
-imdb$regression <- lm(imdb_score ~ log10(budget), data=imdb)$fitted.values
-```
-
-```{r echo=FALSE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
-  geom_point(alpha=0.5, size=0.5) + geom_line(aes(y=regression), colour='red')
-```
-
-## geom_smooth
-
-- Kernel smoother
+## Changing the scale
 
 ```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) +
-  geom_point(alpha=0.5, size=0.5) + geom_smooth()
+
+#ggplot(burritos) + geom_point(aes(x=Volume, y=Cost))
+#ggplot(burritos) + geom_point(aes(x=log10(Volume), y=Cost))
+ggplot(burritos) + geom_point(aes(x=Volume, y=Cost)) +
+  scale_x_log10()
 ```
 
-## Nicolas Cage Movies
+## Adding trend
+
+- Linear regression or kernel smoother
 
 ```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-cage <- imdb[imdb$actor_1_name == 'Nicolas Cage', ]
-cage$actor_1_name <- as.character(cage$actor_1_name)
-ggplot(data=cage, aes(x=title_year, y=imdb_score, label=movie_title)) +
-  geom_point(alpha=0.5) + 
-  geom_text(fontface='italic', size=2, vjust=1, nudge_y=0.1) + 
-  geom_smooth()
+ggplot(burritos) + geom_point(aes(x=Volume, y=Cost)) +
+  geom_smooth(method="lm", aes(x=Volume, y=Cost)) +
+  scale_x_log10()
 ```
 
-## Compare with Leonardo DiCaprio
 
-```{r echo=FALSE, eval=TRUE, fig.width=5, fig.height=3}
-dicaprio <- imdb[imdb$actor_1_name == 'Leonardo DiCaprio', ]
-dicaprio$actor_1_name <- as.character(dicaprio$actor_1_name)
-temp <- rbind(cage, dicaprio)
-ggplot(data=temp, aes(x=title_year, y=imdb_score, label=movie_title, colour=actor_1_name)) +
-  geom_point() + geom_text(fontface='italic', size=2, vjust=1, nudge_y=0.1) +
-  geom_smooth()
+## Visualize three variables
+
+- Use color or shape to indicate a third variable
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+#burritos$Guac[is.na(burritos$Guac)] <- 0
+#burritos$Guac <- ifelse(burritos$Guac == 1, 'Guac', 'No Guac')
+
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Guac)) + 
+  geom_smooth(aes(x=Salsa, y=Taste, color=Guac))
+
+#ggplot(burritos) + 
+#  geom_point(aes(x=Salsa, y=Taste, color=Cost))
 ```
 
-## Scale
 
-- Transform the scale instead of data
+## More than three variables
 
-- How is this different from before
+- Similar plots for different categories with facet
 
-```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
-  scale_x_log10() +
-  geom_point(alpha=0.5, size=0.5) + geom_smooth()
+- http://www.cookbook-r.com/Graphs/Facets_(ggplot2)/
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(temp) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Guac)) + 
+  facet_wrap(~Burrito)
 ```
 
-## Custom tick marks and labels
-
-```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2.5, fig.align='center'}
-ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
-  geom_point(alpha=0.5, size=0.5) + geom_smooth() +
-  scale_x_continuous(breaks=c(1e6, 1e8), 
-                     labels=c('Low budget', 'Blockbuster'),
-                     trans='log10')
-```
-
-## Colour scale
-
-```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2, fig.align='center'}
-imdb <- imdb[!is.na(imdb$gross), ]
-ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
-  geom_point(aes(colour=gross), alpha=0.5, size=0.5) + 
-  scale_x_log10() +
-  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
-                         labels = c('2 million', '4 million', '6 million'),
-                         low = 'blue', high = 'red')
-```
-
-## Putting it together
-
-```{r echo=FALSE, eval=TRUE}
-ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
-  geom_point(aes(colour=gross), alpha=0.5) +
-  scale_x_continuous(breaks=c(1e6, 1e8), 
-                     labels=c('Low', 'Blockbuster'),
-                     trans='log10') +
-  geom_smooth() +
-  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
-                         labels = c('2 million', '4 million', '6 million'),
-                         low = 'blue', high = 'red') +
-  annotate('point', x=2e+08, y=8.3, colour='#D55E00', shape=16, size=4) +
-  annotate('text', x=2e+08, y=8.7, label='Toy Story 3', fontface='italic', size=6, angle=30) +
-  annotate('point', x=210000000, y=5.7, colour='#009E73', shape=17, size=4) +
-  annotate('text', x=210000000, y=5.3, label='Transformers 3', fontface='italic', size=6) +
-  theme_bw() +
-  labs(title='IMDB Movies', x='Budget', y='Rating') + 
-  theme(plot.title=element_text(size=rel(2), colour='blue')) +
-  theme(legend.position=c(0.2, 0.2))
-```
-
-## Details
-
-- Theme 
-
-- http://docs.ggplot2.org/current/theme.html
-
-```{r echo=TRUE, eval=FALSE}
-ggplot(data=imdb, aes(x=budget, y=imdb_score)) +
-  geom_point(aes(colour=gross), alpha=0.5) +
-  scale_x_continuous(breaks=c(1e6, 1e8), 
-                     labels=c('Low', 'Blockbuster'),
-                     trans='log10') +
-  geom_smooth() +
-  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
-                         labels = c('2 million', '4 million', '6 million'),
-                         low = 'blue', high = 'red') +
-  annotate('point', x=2e+08, y=8.3, colour='#D55E00', shape=16, size=4) +
-  annotate('text', x=2e+08, y=8.7, label='Toy Story 3', fontface='italic', size=6, angle=30) +
-  annotate('point', x=210000000, y=5.7, colour='#009E73', shape=17, size=4) +
-  annotate('text', x=210000000, y=5.3, label='Transformers 3', fontface='italic', size=6) +
-  theme_bw() +
-  labs(title='IMDB Movies', x='Budget', y='Rating') + 
-  theme(plot.title=element_text(size=rel(2), colour='blue')) +
-  theme(legend.position=c(0.2, 0.2))
-```
-
-## Facet
-
-- Similar plots for different periods with facet
-
-```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2}
-imdb$period <- cut(imdb$title_year, breaks=quantile(imdb$title_year), 
-                   labels=c('Before 1999', '1999-2005', '2005-2010', '2010-2016'),
-                   include.lowest=TRUE)
-```
-
-```{r echo=TRUE, eval=FALSE}
-ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) + 
-  geom_point(aes(colour=gross), alpha=0.5, size=0.5) +
-  geom_smooth(method='lm') +
-  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
-                         labels = c('2 million', '4 million', '6 million'),
-                         low = 'blue', high = 'red') +
-  facet_wrap(~period)
-```
-
-## Facet
-
-```{r echo=FALSE, eval=TRUE}
-ggplot(data=imdb, aes(x=log10(budget), y=imdb_score)) + 
-  geom_point(aes(colour=gross), alpha=0.5, size=0.5) +
-  geom_smooth(method='lm') +
-  scale_color_continuous(name='Box office gross', breaks = c(2e+8, 4e+8, 6e+8),
-                         labels = c('2 million', '4 million', '6 million'),
-                         low = 'blue', high = 'red') +
-  facet_wrap(~period)
-```
 
 ## Multiple plots
 
-- Multiplot function 
+```{r echo=FALSE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+p1 <- ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste)) +
+  geom_smooth(aes(x=Salsa, y=Taste), method="loess")
+p2 <- ggplot(burritos) + 
+  geom_point(aes(x=Hunger, y=Taste)) +
+  geom_smooth(aes(x=Hunger, y=Taste), method="loess")
+p3 <- ggplot(burritos) + 
+  geom_point(aes(x=Tortilla, y=Taste)) +
+  geom_smooth(aes(x=Tortilla, y=Taste), method="loess")
+p4 <- ggplot(burritos) + 
+  geom_point(aes(x=Meat, y=Taste)) +
+  geom_smooth(aes(x=Meat, y=Taste), method="loess")
+grid.arrange(p1, p2, p3, p4, ncol=2)
+```
 
-http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/  
 
-- gridExtra package 
+## gridExtra
 
-https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html
+- https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html
+
+- Each plot is an object
+
+```{r echo=TRUE, eval=FALSE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+library(gridExtra)
+
+p1 <- ggplot(burritos) + geom_point(aes(x=Salsa, y=Taste)) +
+  geom_smooth(aes(x=Salsa, y=Taste), method="loess")
+p2 <- ggplot(burritos) + geom_point(aes(x=Hunger, y=Taste)) +
+  geom_smooth(aes(x=Hunger, y=Taste), method="loess")
+p3 <- ggplot(burritos) + geom_point(aes(x=Tortilla, y=Taste)) +
+  geom_smooth(aes(x=Tortilla, y=Taste), method="loess")
+p4 <- ggplot(burritos) + geom_point(aes(x=Meat, y=Taste)) +
+  geom_smooth(aes(x=Meat, y=Taste), method="loess")
+
+grid.arrange(p1, p2, p3, p4, ncol=2)
+```
+
+
+## Custom tick marks and labels
+
+```{r echo=TRUE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste)) +
+  scale_y_continuous(breaks=c(1, 2, 3, 4, 5),
+                     labels=c('Throw away', 'Edible', 
+                              'Okay', 'Decent', 'Awesome')) +
+  ylab('Deliciousness')
+```
+
+## Color scale
+
+- scale_color_continuous
+
+- scale_colour_manual
+
+```{r echo=FALSE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Cost)) +
+  scale_color_continuous(name='Price', breaks = c(4, 6, 8, 10),
+                       labels = c('$4', '$6', '$8', '$10'),
+                       low = 'blue', high = 'red')
+```
+
+
+## Other details
+
+- annotate
+
+- theme
+
+```{r echo=TRUE, eval=FALSE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Cost)) + 
+  annotate('text', x=3, y=5.3, label='Best in San Diego', 
+           fontface='italic', size=6, colour='blue') +
+  theme_bw() +
+  labs(title='Burritos', x='Tomato-based Mexican Sauce', y='Deliciousness') + 
+  theme(plot.title=element_text(size=rel(2), hjust = 0.5)) +
+  theme(legend.position=c(0.1, 0.3))
+```
+
+
+## Other details
+
+```{r echo=FALSE, eval=TRUE, warning=FALSE, fig.width=4, fig.height=2.5, fig.align='center'}
+ggplot(burritos) + 
+  geom_point(aes(x=Salsa, y=Taste, color=Cost)) + 
+  annotate('text', x=3, y=5.3, label='Best in San Diego', 
+           fontface='italic', size=6, colour='blue') +
+  theme_bw() +
+  labs(title='Burritos', x='Tomato-based Mexican Sauce', y='Deliciousness') + 
+  theme(plot.title=element_text(size=rel(2), hjust = 0.5)) +
+  theme(legend.position=c(0.1, 0.3))
+```
+
+
+## ggthemes and other extensions
+
+- The Economist and FiveThirtyEight themes
+
+- http://www.ggplot2-exts.org/ggthemes.html
+
 
 ## Resources
 
 - Documentation 
 
 http://docs.ggplot2.org/current/
-
-- Cheatsheet 
-
-https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 
 - R Cookbook 
 
@@ -379,3 +384,117 @@ http://www.cookbook-r.com/Graphs/
 - Stackoverflow 
 
 http://stackoverflow.com/questions/tagged/ggplot2
+
+
+## Polygon
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2, fig.align='center'}
+x <- c(1, 2, 3, 4, 2.5)
+y <- c(3, 0, 1, 4, 4)
+variable <- c(1, 2, 1, 2, 2)
+example <- data.frame(x, y, variable)
+
+ggplot(data=example) +
+  geom_point(aes(x=x, y=y, colour=as.factor(variable))) +
+  geom_polygon(aes(x=x, y=y), colour='black', fill=NA)
+```
+
+
+## Polygons
+
+```{r echo=TRUE, eval=TRUE}
+x <- c(5, 6, 4)
+y <- c(4, 3, 1)
+variable <- c(3, 3, 3)
+triangle <- data.frame(x, y, variable)
+```
+
+```{r echo=TRUE, eval=TRUE, fig.width=4, fig.height=2, fig.align='center'}
+example$group <- 1
+triangle$group <- 2
+both <- rbind(example, triangle)
+ggplot(data=both) +
+  geom_point(aes(x=x, y=y, colour=as.factor(variable))) +
+  geom_polygon(aes(x=x, y=y, group=group), colour='black', fill=NA)
+```
+
+
+## State dataframe
+
+```{r echo=TRUE, eval=TRUE, message=FALSE}
+library(maps)
+
+states <- map_data('state')
+head(states)
+```
+
+
+## California
+
+```{r echo=TRUE, eval=TRUE, message=FALSE, fig.width=3, fig.height=3, fig.align='center'}
+california <- states[states$region == 'california', ]
+ggplot(data=california) + 
+  geom_polygon(aes(x=long, y=lat), fill='orange', color='red')
+```
+
+
+## USA
+
+```{r echo=TRUE, eval=TRUE, message=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data=states) + 
+  geom_polygon(aes(x=long, y=lat, group=group, fill=region), show.legend=FALSE)
+```
+
+
+## Shapefile
+
+- Packages in R can read and process common shapefiles
+
+```{r echo=TRUE, eval=FALSE}
+CAPD <- readOGR('.', 'CPAD_2016b1_SuperUnits')
+CAPD <- spTransform(CAPD, 
+CRS("+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"))
+proj4string(CAPD) <- CRS("+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+```
+
+
+## ggmap and Los Angeles Metro Bike Share Trip Data
+
+- https://github.com/dkahle/ggmap
+
+- https://www.kaggle.com/cityofLA/los-angeles-metro-bike-share-trip-data/version/25#metro-bike-share-trip-data.csv
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+library(ggmap)
+
+metro.bike.share.trip.data <- read.csv("~/Downloads/metro-bike-share-trip-data.csv")
+metro.bike.share.trip.data <- metro.bike.share.trip.data[metro.bike.share.trip.data$Starting.Station.Latitude > 0, ]
+
+# use qmplot to make a scatterplot on a map
+qmplot(Starting.Station.Longitude, Starting.Station.Latitude, 
+       data=metro.bike.share.trip.data[1:500, ], maptype="toner-lite", color=I("red"))
+```
+
+
+## Plot trips as lines
+
+```{r echo=TRUE, eval=TRUE, message=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+qmplot(Starting.Station.Longitude, Starting.Station.Latitude, 
+       data=metro.bike.share.trip.data[1:500, ], maptype="toner-lite", color=I("red")) +
+  geom_segment(aes(x=Starting.Station.Longitude, xend=Ending.Station.Longitude,
+                   y=Starting.Station.Latitude, yend=Ending.Station.Latitude),
+               color='red', alpha=0.2)
+```
+
+
+## The end
+
+- https://rstudio.github.io/leaflet/
+
+- https://shiny.rstudio.com/gallery/
+
+- https://plot.ly/r/
+
+- https://rstudio.github.io/r2d3/articles/introduction.html
+
+- Thank you!
